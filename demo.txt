@@ -1,0 +1,48 @@
+Alpha 1
+Beta 5
+Gamma 5
+Delta 1
+DieSize 0 0 50 30
+NumInput 2
+Input INPUT0 0 25
+Input INPUT1 0 5
+NumOutput 2
+Output OUTPUT0 50 25
+Output OUTPUT1 50 5
+FlipFlop 1 FF1 5 10 2
+Pin D 0 8
+Pin Q 5 8
+FlipFlop 2 FF2 8 10 4
+Pin D0 0 9
+Pin D1 0 6
+Pin Q0 8 9
+Pin Q1 8 6
+NumInstances 2
+Inst C1 FF1 15 20
+Inst C2 FF1 15 0
+NumNets 4
+Net N1 2
+Pin INPUT0
+Pin C1/D
+Net N2 2
+Pin INPUT1
+Pin C2/D
+Net N3 2
+Pin C1/Q
+Pin OUTPUT0
+Net N4 2
+Pin C2/Q
+Pin OUTPUT1
+BinWidth 10
+BinHeight 10
+BinMaxUtil 79
+PlacementRows 0 0 2 10
+DisplacementDelay 0.01
+QpinDelay FF1 1
+QpinDelay FF2 2
+TimingSlack C1 D 1
+TimingSlack C1 Q 0
+TimingSlack C2 D 1
+TimingSlack C2 Q 0
+GatePower FF1 10
+GatePower FF2 17
