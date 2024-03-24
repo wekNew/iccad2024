@@ -38,7 +38,7 @@ int main() {
 void input_file() {
 	ifstream file(input_filename);
 	if (!file.is_open()) {
-		cout << "µLªk¥´¶}ÀÉ®×" << endl;
+		cout << "ç„¡æ³•æ‰“é–‹æª”æ¡ˆ" << endl;
 		return;
 	}
 	string line;
@@ -172,7 +172,7 @@ void input_file() {
 					size_t pos = tokens[1].find('/');
 					
 					if (pos != string::npos) {
-						string before = tokens[1].substr(0, pos); // ´£¨ú¤À³Î¦r¤¸¤§«eªº³¡¤À
+						string before = tokens[1].substr(0, pos); // æå–åˆ†å‰²å­—å…ƒä¹‹å‰çš„éƒ¨åˆ†
 						string after = tokens[1].substr(pos + 1);
 						for (auto& v : FF) {
 							if (v.inst_name == before) {
