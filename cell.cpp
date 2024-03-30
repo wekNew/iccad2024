@@ -15,15 +15,15 @@ void show_stardard_FF(vector<Cell>& input) {
 	}
 	for (auto temp : input) {
 		//outFile << "For standard FF" << endl;
-		outFile << temp.ff_name << ":" << endl;
-		outFile << "\tbit:\t" << temp.bit << endl;
-		outFile << "\theight:\t" << temp.ff_height << "\twidth\t" << temp.ff_width << endl;
-		outFile << "\tpincout:\t" << temp.pin_count << endl;
-		for (auto v : temp.ff_pin) {
-			outFile << "\t\tpin:\t" << v.pin_name << ":(" << v.x_pos << "," << v.y_pos << ")" << endl;
+		outFile << temp.get_ff_name() << ":" << endl;
+		outFile << "\tbit:\t" << temp.get_bit() << endl;
+		outFile << "\theight:\t" << temp.get_ff_height() << "\twidth\t" << temp.get_ff_width() << endl;
+		outFile << "\tpincout:\t" << temp.get_pin_count() << endl;
+		for (auto v : temp.get_pin()) {
+			outFile << "\t\tpin:\t" << v.get_pin_name() << ":(" << v.get_pin_xpos() << "," << v.get_pin_ypos() << ")" << endl;
 		}
-		outFile << "\tQpinDelay:\t" << temp.q_pin_delay << endl;
-		outFile << "\tgate_power:\t" << temp.gate_power << endl;
+		outFile << "\tQpinDelay:\t" << temp.get_q() << endl;
+		outFile << "\tgate_power:\t" << temp.get_power() << endl;
 	}
 	
 }
@@ -35,16 +35,16 @@ void show_FF(vector<Cell>& input) {
 	}
 	for (auto temp : input) {
 		//outFile << "For inst FF" << endl;
-		outFile << temp.inst_name << ":" << endl;
-		outFile << "\tmodel:\t" << temp.ff_name << endl;
-		outFile << "\tbit:\t" << temp.bit << endl;
-		outFile << "\tx_pox\t" << temp.x_pos << "\ty_pos\t" << temp.y_pos << endl;
-		outFile << "\theight:\t" << temp.ff_height << "\twidth\t" << temp.ff_width << endl;
-		outFile << "\tpincout:\t" << temp.pin_count << endl;
-		for (auto v : temp.ff_pin) {
-			outFile << "\t\tpin:\t" << v.pin_name << ":(" << v.x_pos << "," << v.y_pos << ")\tTimingSlack=" << v.timing_slack << endl;
+		outFile << temp.get_inst_name()<< ":" << endl;
+		outFile << "\tmodel:\t" << temp.get_ff_name() << endl;
+		outFile << "\tbit:\t" << temp.get_bit() << endl;
+		outFile << "\tx_pox\t" << temp.get_xpos() << "\ty_pos\t" << temp.get_ypos() << endl;
+		outFile << "\theight:\t" << temp.get_ff_height() << "\twidth\t" << temp.get_ff_width() << endl;
+		outFile << "\tpincout:\t" << temp.get_pin_count() << endl;
+		for (auto v : temp.get_pin()) {
+			outFile << "\t\tpin:\t" << v.get_pin_name() << ":(" << v.get_pin_xpos() << "," << v.get_pin_ypos() << ")\tTimingSlack=" << v.get_timing_slack() << endl;
 		}
-		outFile << "\tQpinDelay:\t" << temp.q_pin_delay << endl;
-		outFile << "\tgate_power:\t" << temp.gate_power << endl;
+		outFile << "\tQpinDelay:\t" << temp.get_q() << endl;
+		outFile << "\tgate_power:\t" << temp.get_power() << endl;
 	}
 }

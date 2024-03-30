@@ -9,27 +9,53 @@ using namespace std;
 #define _NETLIST_H_
 
 class Net {
-public:
+private:
 	string net_name;
-	int net_count;
+	int pin_count;
 	vector<Pin*> connect_pin;
-	Net(string net_name,int net_count) {
+public:
+	Net(string net_name,int pin_count) {
 		this->net_name = net_name;
-		this->net_count = net_count;
+		this->pin_count = pin_count;
+	}
+	////////set////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	void set_pin_count(int temp) {
+		pin_count = temp;
 	}
 	void set_pin(Pin* temp) {
 		connect_pin.reserve(connect_pin.capacity() + 1);
 		connect_pin.push_back(temp);
 	}
-
+	////////get////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	string get_net_name() {
+		return net_name;
+	}
+	int get_pin_count() {
+		return pin_count;
+	}
+	vector<Pin*>& get_connect_pin() {
+		return connect_pin;
+	}
 };
 class NetList {
-public:
+private:
 	int net_count;
 	vector<Net> contain_net;
+public:
+	////////set////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	void set_net_count(int temp) {
+		net_count = temp;
+	}
 	void set_net(Net temp) {
 		contain_net.reserve(contain_net.capacity() + 1);
 		contain_net.push_back(temp);
+	}
+	////////get////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	int get_net_count() {
+		return net_count;
+	}
+	vector<Net>& get_contain_net() {
+		return contain_net;
 	}
 };
 void show_netlist(NetList temp);

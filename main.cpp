@@ -5,39 +5,19 @@
 #include <fstream>
 #include <sstream>
 using namespace std;
-#include"argument.h"
 #include"pin.h"
-#include"die.h"
 #include"cell.h"
 #include"netlist.h"
 
+
+struct Die {
+	int x_min, y_min, x_max, y_max;
+	int input_pin_num, optput_pin_num;
+	vector<Pin> input_pin, output_pin;
+};
+
 string input_filename="demo.txt";
 
-void show_argument() {
-	ofstream outFile("show_argument.txt");
-
-	if (!outFile.is_open()) {
-		std::cerr << "ÂµLÂªkÂ¥Â´Â¶}Ã€Ã‰Â®Ã—" << std::endl;
-		return;
-	}
-	
-	outFile << "Alpha  " << alpha << endl;
-	outFile << "Beta  " << beta << endl;
-	outFile << "Gamma  " << gamma << endl;
-	outFile << "Delta  " << delta << endl;
-	outFile << "Bin_width  " << bin_width << endl;
-	outFile << "Bin_height  " << bin_height << endl;
-	outFile << "Bin_max_util  " << bin_max_util << endl;
-	outFile << "Row_start_x  " << row_start_x << endl;
-	outFile << "Row_start_y  " << row_start_y << endl;
-	outFile << "Row_width  " << row_width << endl;
-	outFile << "Row_height  " << row_height << endl;
-	outFile << "Displacement_delay  " << displacement_delay << endl;
-
-	
-	outFile.close();
-	return;
-}
 void input_file();
 void initialize();
 void show();
@@ -62,7 +42,7 @@ int main() {
 void input_file() {
 	ifstream file(input_filename);
 	if (!file.is_open()) {
-		cout << "ç„¡æ³•æ‰“é–‹æª”æ¡ˆ" << endl;
+		cout << "µLªk¥´¶}ÀÉ®×" << endl;
 		return;
 	}
 	string line;
@@ -160,7 +140,7 @@ void input_file() {
 					tokens.push_back(token);
 				}
 				for (auto v : standard_FF) {
-					if (v.ff_name == tokens[2]) {
+					if (v.get_ff_name() == tokens[2]) {
 						Cell temp_cell = v;
 						temp_cell.set_inst(tokens[1], stoi(tokens[3]), stoi(tokens[4]));
 						FF.push_back(temp_cell);
@@ -171,7 +151,7 @@ void input_file() {
 		}
 		/////////////////////////////////////////////////////////////////
 		else if (tokens[0] == "NumNets") {
-			netlist.net_count= stoi(tokens[1]);
+			netlist.set_net_count(stoi(tokens[1]));
 			int time = stoi(tokens[1]);
 			
 			while (time--) {//deal with net_count
@@ -196,12 +176,12 @@ void input_file() {
 					size_t pos = tokens[1].find('/');
 					
 					if (pos != string::npos) {
-						string before = tokens[1].substr(0, pos); // æå–åˆ†å‰²å­—å…ƒä¹‹å‰çš„éƒ¨åˆ†
+						string before = tokens[1].substr(0, pos); // ´£¨ú¤À³Î¦r¤¸¤§«eªº³¡¤À
 						string after = tokens[1].substr(pos + 1);
 						for (auto& v : FF) {
-							if (v.inst_name == before) {
-								for (auto& u : v.ff_pin) {
-									if (u.pin_name == after) {
+							if (v.get_inst_name() == before) {
+								for (auto& u : v.get_pin()) {
+									if (u.get_pin_name() == after) {
 										cout << "There\n";
 										temp_net.set_pin(&u);
 										break;
@@ -212,14 +192,14 @@ void input_file() {
 					}
 					else {
 						for (auto& v : die.input_pin) {
-							if (v.pin_name == tokens[1]) {
+							if (v.get_pin_name() == tokens[1]) {
 								cout << "Here\n";
 								temp_net.set_pin(&v);
 								break;
 							}
 						}
 						for (auto& v : die.output_pin) {
-							if (v.pin_name == tokens[1]) {
+							if (v.get_pin_name() == tokens[1]) {
 								cout << "Here\n";
 								temp_net.set_pin(&v);
 								break;
@@ -254,25 +234,26 @@ void input_file() {
 		}
 		else if (tokens[0] == "QpinDelay") {
 			for (auto &v : standard_FF) {
-				if (v.ff_name == tokens[1]) {
+				if (v.get_ff_name() == tokens[1]) {
 					
-					v.q_pin_delay=stoi(tokens[2]);
+					v.set_q(stoi(tokens[2]));
 					
 					break;
 				}
 			}
 			for (auto &v : FF) {
-				if (v.ff_name == tokens[1]) {
-					v.q_pin_delay = stoi(tokens[2]);
+				if (v.get_ff_name() == tokens[1]) {
+					v.set_q(stoi(tokens[2]));
 				}
 			}
 		}
 		else if (tokens[0] == "TimingSlack") {
 			for (auto &v : FF) {
-				if (v.inst_name == tokens[1]) {
-					for (auto &iter : v.ff_pin) {
-						if (iter.pin_name == tokens[2]) {
-							iter.timing_slack = stoi(tokens[3]);
+				if (v.get_inst_name() == tokens[1]) {
+					for (auto &iter : v.get_pin()) {
+						if (iter.get_pin_name() == tokens[2]) {
+							iter.set_timing_slack(stoi(tokens[3]));
+							cout << "set_timing_slack=" << iter.get_timing_slack();
 							break;
 						}
 					}
@@ -283,14 +264,14 @@ void input_file() {
 		/////////////////////////////////////////////////////////////////
 		else if (tokens[0] == "GatePower") {
 			for (auto &v : standard_FF) {
-				if (v.ff_name == tokens[1]) {
-					v.gate_power = stoi(tokens[2]);
+				if (v.get_ff_name() == tokens[1]) {
+					v.set_power(stoi(tokens[2]));
 					break;
 				}
 			}
 			for (auto &v : FF) {
-				if (v.ff_name == tokens[1]) {
-					v.gate_power = stoi(tokens[2]);
+				if (v.get_ff_name() == tokens[1]) {
+					v.set_power(stoi(tokens[2]));
 				}
 			}
 		}
@@ -310,8 +291,8 @@ void initialize() {
 		total_pin.push_back(&v);
 	}
 	for (auto& v : FF) {
-		for (auto& u : v.ff_pin) {
-			u.belong = &v;
+		for (auto& u : v.get_pin()) {
+			u.set_belong(&v);
 			total_pin.reserve(total_pin.size() + 1);
 			total_pin.push_back(&u);
 		}
@@ -319,7 +300,7 @@ void initialize() {
 
 }
 void show() {
-	show_argument();
+	
 	show_stardard_FF(standard_FF);
 	show_FF(FF);
 	show_netlist(netlist);

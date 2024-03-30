@@ -14,14 +14,14 @@ void show_netlist(NetList temp) {
 		std::cerr << "無法打開檔案" << std::endl;
 		return;
 	}
-	outFile << "NetList have:\t" << temp.net_count << endl;
-	for (auto v : temp.contain_net) {
-		outFile << "\t" << v.net_name << ":\t";
-		for (auto u : v.connect_pin) {
-			if (u->belong != NULL) {
-				outFile << u->belong->inst_name << "/";
+	outFile << "NetList have:\t" << temp.get_net_count() << endl;
+	for (auto v : temp.get_contain_net()) {
+		outFile << "\t" << v.get_net_name() << ":\t";
+		for (auto u : v.get_connect_pin()) {
+			if (u->get_belong() != NULL) {
+				outFile << u->get_belong()->get_inst_name() << "/";
 			}
-			outFile << u->pin_name<<"  ";
+			outFile << u->get_pin_name() << "  ";
 		}
 		outFile << endl;
 	}
