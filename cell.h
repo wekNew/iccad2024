@@ -5,6 +5,7 @@
 #include<vector>
 using namespace std;
 #include"pin.h"
+#include "Point.h"
 
 #ifndef	_CELL_H_
 #define _CELL_H_
@@ -17,6 +18,7 @@ private:
 	int pin_count;
 	vector<Pin> ff_pin;
 	int x_pos, y_pos;
+	Point pos;
 	string inst_name;
 	
 	int q_pin_delay;
@@ -31,6 +33,7 @@ public:
 	}
 	void set_inst(string inst_name,int x_pos,int y_pos) {
 		this->inst_name = inst_name;
+		pos = { (float)x_pos,(float)y_pos };
 		this->x_pos = x_pos;
 		this->y_pos = y_pos;
 	}
@@ -42,6 +45,7 @@ public:
 	void set_q(int temp) {
 		q_pin_delay = temp;
 	}
+	void setPos(const Point& newPos) { pos = newPos; }
 	void set_power(int temp) {
 		gate_power=temp;
 	}
@@ -64,6 +68,10 @@ public:
 	vector<Pin>& get_pin() {
 		return ff_pin;
 	}
+	
+	Point getPos() const { return pos; }
+
+	
 	int get_xpos() {
 		return x_pos;
 	}

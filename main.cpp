@@ -8,15 +8,15 @@ using namespace std;
 #include"pin.h"
 #include"cell.h"
 #include"netlist.h"
-
-
+#include "meanShift.h"
+#include "Cluster.h"
 struct Die {
 	int x_min, y_min, x_max, y_max;
 	int input_pin_num, optput_pin_num;
 	vector<Pin> input_pin, output_pin;
 };
 
-string input_filename="demo.txt";
+string input_filename="test.txt";
 
 void input_file();
 void initialize();
@@ -37,6 +37,35 @@ int main() {
 	input_file();
 	initialize();
 	show();
+
+	float bandwidth = 7.0;
+	int K = 2;
+	std::vector<Cluster> clusters = meanShift(FF, bandwidth,K);
+
+	// ¥´¦Lµ²ªG
+	cout << "\n";
+	for (auto v : FF) {
+		cout << v.get_inst_name() << "'s pos: ";
+		for (auto u : v.getPos()) {
+			cout << u<<" ";
+		}
+		cout << "\n";
+	}
+	int count = 0;
+	for (auto v : clusters) {
+		cout <<"cluster " << count<<" :\n";
+		int p = 0;
+		for (auto u : v) {
+			cout << "\tpoint " << p << " : ";
+			for (auto z : u) {
+				cout  << z << " ";
+			}
+			cout << "\n";
+			p++;
+		}
+		cout << "\n";
+		count++;
+	}
 	return 0;
 }
 void input_file() {
