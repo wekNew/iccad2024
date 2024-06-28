@@ -1,0 +1,12 @@
+Alpha  1
+Beta  5
+Gamma  5
+Delta  1
+Bin_width  10
+Bin_height  10
+Bin_max_util  79
+Row_start_x  0
+Row_start_y  0
+Row_width  2
+Row_height  10
+Displacement_delay  0.01

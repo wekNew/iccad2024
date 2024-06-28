@@ -20,7 +20,8 @@ private:
 	int x_pos, y_pos;
 	Point pos;
 	string inst_name;
-	
+	int cluster_num;
+
 	int q_pin_delay;
 	int gate_power;
 public:
@@ -30,6 +31,7 @@ public:
 		this->ff_width = ff_width;
 		this->ff_height = ff_height;
 		this->pin_count = pin_count;
+		cluster_num = -1;
 	}
 	void set_inst(string inst_name,int x_pos,int y_pos) {
 		this->inst_name = inst_name;
@@ -48,6 +50,9 @@ public:
 	void setPos(const Point& newPos) { pos = newPos; }
 	void set_power(int temp) {
 		gate_power=temp;
+	}
+	void set_clusterNum(int num) {
+		cluster_num = num;
 	}
 	////////get////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	int get_bit() {
@@ -70,7 +75,9 @@ public:
 	}
 	
 	Point getPos() const { return pos; }
-
+	int get_clusterNum() {
+		return cluster_num;
+	}
 	
 	int get_xpos() {
 		return x_pos;

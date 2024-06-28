@@ -9,7 +9,8 @@
 #include "Cell.h"
 #include <algorithm>
 
-std::vector<Cluster> meanShift(std::vector<Cell>& cells, float bandwidth,int K) {
+void meanShift(std::vector<Cell>& cells, float bandwidth,int K, vector<vector<Cell*>> &clusters) {
+    cout << "start to meanShift\n";
     std::vector<Point> points;
     for (const auto& cell : cells) {
         points.push_back(cell.getPos());
@@ -22,10 +23,12 @@ std::vector<Cluster> meanShift(std::vector<Cell>& cells, float bandwidth,int K) 
     float doubledSquaredBandwidth = 2 * bandwidth * bandwidth;
 
     while (!builder.allPointsHaveStoppedShifting() && iterations < MAX_ITERATIONS) {
+        cout << "\tcalculate shifted point\n";
 #pragma omp parallel for default(none) \
             shared(points, dimensions, builder, bandwidth, radius, doubledSquaredBandwidth, cells, k) \
             schedule(dynamic)
         for (long i = 0; i < points.size(); ++i) {
+            cout << "\t\tNo." << i << endl;
             if (builder.hasStoppedShifting(i))
                 continue;
 
@@ -71,28 +74,64 @@ std::vector<Cluster> meanShift(std::vector<Cell>& cells, float bandwidth,int K) 
         cells[i].setPos(builder.getShiftedPoint(i));
     }
 
-    // 使用更新后的 cells 来构建 clusters
-    std::vector<Cluster> clusters;
-    for (long i = 0; i < cells.size(); ++i) {
-        Point shiftedPoint = cells[i].getPos();
-        auto it = clusters.begin();
-        auto itEnd = clusters.end();
-        while (it != itEnd) {
-            if (it->getCentroid().euclideanDistance(shiftedPoint) <= bandwidth) {
-                // 将点添加到已经创建的簇中
-                it->addPoint(cells[i].getPos());
-                break;
-            }
-            ++it;
+    
+    buildClustersWithEpsilon(cells, bandwidth,clusters);
+    
+}
+
+void buildClustersWithEpsilon(std::vector<Cell>& cells, float epsilon, vector<vector<Cell*>> &clusters) {
+    cout << "clustering with epsilon\n";
+    //std::vector<Cluster> clusters;
+    //std::vector<bool> visited(cells.size(), false);
+    //vector<vector<Cell *>> clusters;
+    vector<int> connected(cells.size(), -1);
+    //vector<int> boss(cells.size(), -1);
+    
+    
+    for (int i = 0; i < cells.size(); ++i) {
+        if (connected[i] == -1) {
+            connected[i] = i;
         }
-        if (it == itEnd) {
-            // 创建一个新的簇
-            Cluster cluster(shiftedPoint);
-            cluster.addPoint(cells[i].getPos());
-            clusters.emplace_back(cluster);
+        int in_cluster_num = connected[i];
+
+        for (int j = i+1; j < cells.size(); ++j) {
+            if (cells[i].getPos().euclideanDistance(cells[j].getPos()) <= epsilon) {
+                if (connected[j] == -1) {
+                    connected[j] = in_cluster_num;
+                }
+                else {
+                    int boss1 = findRoot(j, connected);
+                    int boss2 = findRoot(i, connected);
+                    if ( boss1 != boss2 ) {
+                        connected[boss2] = boss1;
+                    }
+                }
+            }
         }
     }
-
-
-    return clusters;
+    vector<int> boss;
+    for (int i = 0; i < connected.size(); ++i) {
+        //vector<int>::iterator it = find(boss.begin(), boss.end(), findRoot(i, connected));
+        bool create = true;
+        for (int j = 0; j < boss.size();j++) {
+            if (findRoot(i, connected) == boss[j]) {
+                clusters[j].emplace_back(&cells[i]);
+                create = false;
+            }
+        }
+        if (create) {
+            vector<Cell*> newCluster;
+            newCluster.emplace_back(&cells[i]);
+            clusters.emplace_back(newCluster);
+            boss.emplace_back(i);
+        }
+    }
+}
+int findRoot(int target,vector<int> &connected) {
+    if (connected[target] == target) {
+        return target;
+    }
+    else {
+        return findRoot(connected[target],connected);
+    }
 }

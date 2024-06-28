@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{ffaf0f98-41d6-4657-9244-a040e11f5f08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="header_file">
+      <UniqueIdentifier>{c67d976f-4c9d-41f2-b3b3-6a4a2f32eb2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="meanshift">
+      <UniqueIdentifier>{0f419a6d-224b-41f2-b228-22cf2e26f684}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="component">
+      <UniqueIdentifier>{c8e46808-54b6-4059-b744-0be70d9c16ff}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="cell.cpp">
+      <Filter>component</Filter>
+    </ClCompile>
+    <ClCompile Include="netlist.cpp">
+      <Filter>component</Filter>
+    </ClCompile>
+    <ClCompile Include="Cluster.cpp">
+      <Filter>meanshift</Filter>
+    </ClCompile>
+    <ClCompile Include="ClustersBuilder.cpp">
+      <Filter>meanshift</Filter>
+    </ClCompile>
+    <ClCompile Include="Point.cpp">
+      <Filter>meanshift</Filter>
+    </ClCompile>
+    <ClCompile Include="meanShift.cpp">
+      <Filter>meanshift</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pin.h">
+      <Filter>component</Filter>
+    </ClInclude>
+    <ClInclude Include="algorithm.h">
+      <Filter>header_file</Filter>
+    </ClInclude>
+    <ClInclude Include="cell.h">
+      <Filter>component</Filter>
+    </ClInclude>
+    <ClInclude Include="netlist.h">
+      <Filter>component</Filter>
+    </ClInclude>
+    <ClInclude Include="Cluster.h">
+      <Filter>meanshift</Filter>
+    </ClInclude>
+    <ClInclude Include="ClustersBuilder.h">
+      <Filter>meanshift</Filter>
+    </ClInclude>
+    <ClInclude Include="Point.h">
+      <Filter>meanshift</Filter>
+    </ClInclude>
+    <ClInclude Include="meanShift.h">
+      <Filter>meanshift</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

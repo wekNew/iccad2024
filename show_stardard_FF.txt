@@ -1,0 +1,18 @@
+FF1:
+	bit:	1
+	height:	10	width	5
+	pincout:	2
+		pin:	D:(0,8)
+		pin:	Q:(5,8)
+	QpinDelay:	1
+	gate_power:	10
+FF2:
+	bit:	2
+	height:	10	width	8
+	pincout:	4
+		pin:	D0:(0,9)
+		pin:	D1:(0,6)
+		pin:	Q0:(8,9)
+		pin:	Q1:(8,6)
+	QpinDelay:	2
+	gate_power:	17
