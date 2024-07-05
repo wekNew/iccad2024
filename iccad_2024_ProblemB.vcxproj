@@ -26,13 +26,16 @@
     <ClCompile Include="netlist.cpp" />
     <ClCompile Include="Cluster.cpp" />
     <ClCompile Include="Point.cpp" />
+    <ClCompile Include="partition.cpp" />
+    <ClCompile Include="table.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cluster.h" />
     <ClInclude Include="ClustersBuilder.h" />
+    <ClInclude Include="partition.h" />
     <ClInclude Include="meanShift.h" />
     <ClInclude Include="pin.h" />
-    <ClInclude Include="algorithm.h" />
+    <ClInclude Include="table.h" />
     <ClInclude Include="cell.h" />
     <ClInclude Include="netlist.h" />
     <ClInclude Include="Point.h" />

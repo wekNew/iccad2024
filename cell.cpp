@@ -6,6 +6,51 @@
 #include <sstream>
 using namespace std;
 #include "cell.h"
+
+
+
+void InitialDebanking(vector<Cell>& FF, vector<Cell*>& best_st_table) {
+	// 檢查 best_st_table 是否為空
+	if (best_st_table.empty()) {
+		cerr << "Error: best_st_table is empty!" << endl;
+		return;
+	}
+
+	// 準備存儲需要插入的 Cell
+	vector<Cell> newCells;
+
+	for (int i = 0; i < FF.size(); ++i) {
+		cout << "i=" << i << endl;
+		if (FF[i].get_bit() > 1) {
+			cout << "start to debanking" << endl;
+			// 獲取當前位置
+			Point currentPos = FF[i].getPos();
+			// 複製和重設位置
+			Cell original_FF = FF[i];
+			
+			for (int j = 0; j < original_FF.get_bit(); ++j) {
+				Cell copy_cell = *best_st_table[0];
+				copy_cell.setPos(currentPos);
+				copy_cell.set_inst_name(original_FF.get_inst_name() + "'" + to_string(j));
+				copy_cell.get_pin().at(0).set_timing_slack(original_FF.get_pin().at(j).get_timing_slack());
+				if (j == 0) {
+					FF[i] = copy_cell; // 更新當前 Cell
+				}
+				else {
+					newCells.emplace_back(copy_cell); // 添加到新向量
+				}
+			}
+		}
+	}
+
+	// 在遍歷結束後一次性插入新元素
+	FF.reserve(FF.size() + newCells.size());
+	FF.insert(FF.end(), newCells.begin(), newCells.end());
+	
+}
+
+
+
 void show_stardard_FF(vector<Cell>& input) {
 	ofstream outFile("show_stardard_FF.txt");
 

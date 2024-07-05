@@ -48,6 +48,11 @@ public:
 
     float euclideanDistance(const Point& p) const;
 
+    std::vector<float>& access_Values() {
+        return values;
+    }
+
+    
 private:
     std::vector<float> values;
      

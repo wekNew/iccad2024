@@ -23,7 +23,10 @@ private:
 	int cluster_num;
 
 	int q_pin_delay;
-	int gate_power;
+	float gate_power;
+
+	vector<Cell*> children;
+
 public:
 	Cell(int bit, string ff_name, int ff_width, int ff_height, int pin_count) {
 		this->bit = bit;
@@ -32,6 +35,7 @@ public:
 		this->ff_height = ff_height;
 		this->pin_count = pin_count;
 		cluster_num = -1;
+		children.clear();
 	}
 	void set_inst(string inst_name,int x_pos,int y_pos) {
 		this->inst_name = inst_name;
@@ -40,6 +44,12 @@ public:
 		this->y_pos = y_pos;
 	}
 	////////set////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	void set_bit(int bit) {
+		this->bit = bit;
+	}
+	void set_inst_name(string temp) {
+		inst_name = temp;
+	}
 	void set_pin(Pin temp) {
 		ff_pin.reserve(ff_pin.capacity() + 1);
 		ff_pin.push_back(temp);
@@ -47,9 +57,15 @@ public:
 	void set_q(int temp) {
 		q_pin_delay = temp;
 	}
-	void setPos(const Point& newPos) { pos = newPos; }
-	void set_power(int temp) {
+	void setPos ( Point newPos)
+	{ 
+		pos = newPos; 
+	}
+	void set_power(float temp) {
 		gate_power=temp;
+	}
+	void set_children(vector<Cell*> children) {
+		this->children = children;
 	}
 	void set_clusterNum(int num) {
 		cluster_num = num;
@@ -74,7 +90,12 @@ public:
 		return ff_pin;
 	}
 	
-	Point getPos() const { return pos; }
+	Point getPos(){
+		return pos;
+	}
+	Point& get_pos_address() {
+		return pos;
+	}
 	int get_clusterNum() {
 		return cluster_num;
 	}
@@ -91,17 +112,39 @@ public:
 	int get_q() {
 		return q_pin_delay;
 	}
-	int get_power() {
+	float get_power() {
 		return gate_power;
 	}
-	
-	
+	float get_min_slack() {
+		float min = 1000;
+		for (auto& v : ff_pin) {
+			if (v.get_pin_name().at(0)=='D' && v.get_timing_slack() < min) {
+				min = v.get_timing_slack();
+			}
+		}
+		return min;
+	}
+	vector<Cell*> get_children() {
+		return children;
+	}
+	//////////////////////////////////////////////////////////////////////////
+	void change_pin(int index,Pin temp) {
+		if (index < ff_pin.size()) {
+			ff_pin[index] = temp;
+		}
+	}
+	void initialize_pin() {
+		ff_pin.clear();
+		pin_count = 0;
+	}
+
 };
 /*class Inst {
 	string inst_name;
 	string contain_ff_name;
 	int x_pos, y_pos;
 };*/
+void InitialDebanking(vector<Cell>& FF, vector<Cell*>& best_st_table);
 void show_stardard_FF(vector<Cell>& input);
 void show_FF(vector<Cell>& input);
 #endif _CELL_H_

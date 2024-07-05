@@ -4,14 +4,20 @@
     <Filter Include="src">
       <UniqueIdentifier>{ffaf0f98-41d6-4657-9244-a040e11f5f08}</UniqueIdentifier>
     </Filter>
-    <Filter Include="header_file">
-      <UniqueIdentifier>{c67d976f-4c9d-41f2-b3b3-6a4a2f32eb2c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="meanshift">
       <UniqueIdentifier>{0f419a6d-224b-41f2-b228-22cf2e26f684}</UniqueIdentifier>
     </Filter>
     <Filter Include="component">
       <UniqueIdentifier>{c8e46808-54b6-4059-b744-0be70d9c16ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm">
+      <UniqueIdentifier>{c67d976f-4c9d-41f2-b3b3-6a4a2f32eb2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm\table">
+      <UniqueIdentifier>{fdc406c3-23a2-49e1-bc84-3b9263290194}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm\partition">
+      <UniqueIdentifier>{7c98e1aa-8e22-4722-9c07-b757c77d2a9d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -36,13 +42,16 @@
     <ClCompile Include="meanShift.cpp">
       <Filter>meanshift</Filter>
     </ClCompile>
+    <ClCompile Include="table.cpp">
+      <Filter>algorithm\table</Filter>
+    </ClCompile>
+    <ClCompile Include="partition.cpp">
+      <Filter>algorithm\partition</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pin.h">
       <Filter>component</Filter>
-    </ClInclude>
-    <ClInclude Include="algorithm.h">
-      <Filter>header_file</Filter>
     </ClInclude>
     <ClInclude Include="cell.h">
       <Filter>component</Filter>
@@ -61,6 +70,12 @@
     </ClInclude>
     <ClInclude Include="meanShift.h">
       <Filter>meanshift</Filter>
+    </ClInclude>
+    <ClInclude Include="table.h">
+      <Filter>algorithm\table</Filter>
+    </ClInclude>
+    <ClInclude Include="partition.h">
+      <Filter>algorithm\partition</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

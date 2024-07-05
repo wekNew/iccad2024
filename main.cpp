@@ -10,18 +10,21 @@ using namespace std;
 #include"netlist.h"
 #include "meanShift.h"
 #include "Cluster.h"
+#include "table.h"
+#include "partition.h"
 struct Die {
 	int x_min, y_min, x_max, y_max;
 	int input_pin_num, optput_pin_num;
 	vector<Pin> input_pin, output_pin;
 };
 
-string input_filename="testcase1_0614.txt";
+
+string input_filename="test.txt";
 
 void input_file();
 void initialize();
 void show();
-void show_cluster(vector<vector<Cell*>> clusters);
+void show_cluster(vector < vector < Cell* >> clusters);
 
 int alpha, beta, gamma, delta;
 int bin_width, bin_height, bin_max_util;
@@ -32,18 +35,67 @@ Die die;
 vector<Pin*> total_pin;
 vector<Cell> standard_FF;
 vector<Cell> FF;
-vector<vector<Cell*>> clusters;
+vector<Cell> standard_Gate;
+vector<Cell> Gate;
+vector < vector < Cell* >> CLUSTERS;
+vector<Cluster*> clusters;
 NetList netlist;
+
+vector<combination> combi_table(MAX_BIT + 1);  //combinational table:use index to represent bit from 1 to MAXBIT
+vector<Cell> MBFF;
+vector<Cell*> best_st_table; //record lowest cost standard FF
+
 int main() {
 	input_file();
 	initialize();
-	show();
+	buildTable(standard_FF, combi_table, MBFF, best_st_table, beta, gamma);
+	InitialDebanking(FF,best_st_table);
 
-	float bandwidth = 100.0;
-	int K = 40;
+	float max_bandwidth = 6.0;
+	int K = 10;
+	int M = 4;
+	float epsilon = 0.1;
+
 	
-	meanShift(FF, bandwidth,K,clusters);
+	for (int i = 0; i < combi_table.size(); i++) {
+		cout << "index: " << i << " combi_1: " << combi_table[i].combi_1 << " combi_2: " << combi_table[i].combi_2 << endl;
+	}
 
+	meanShift(FF, max_bandwidth,M,K,epsilon,CLUSTERS);
+	for (auto& v : CLUSTERS) {
+		Cluster* temp=new Cluster();
+		for (auto& u : v) {
+			temp->add_cell(u);
+			//cout << "adding cell:" << u->get_inst_name();
+		}
+		//cout << "\tsize is " << temp->getCells().size() << endl;
+		clusters.emplace_back(temp);
+	}
+	cout << "size of clusters = " << clusters.size() << endl;
+	int count = 0;
+	for (auto& cluster : clusters) {
+		cout << "cluster " << count << " :\n";
+		for (auto& u : cluster->getCells()) {
+			cout << "\t" << u->get_inst_name() << " : ";
+			for (auto z : u->getPos()) {
+				cout << z << " ";
+			}
+			cout << "\n";
+		}
+		cout << "\n";
+		count++;
+	}
+
+	for (auto& cluster : clusters) {
+		cout << "cluster" << endl;
+		
+		cout << cluster->getCells().size()<< endl;
+		cout << combi_table[cluster->getCells().size()].combi_1 << endl;
+		cout << combi_table[cluster->getCells().size()].combi_2 << endl;
+		clusterToMBFF(cluster->getCells(), cluster->getPos(), combi_table, MBFF, combi_table[cluster->getCells().size()].combi_1, combi_table[cluster->getCells().size()].combi_2);
+	}
+	
+	
 	// 打印結果
 	cout << "\n";
 	for (auto v : FF) {
@@ -53,21 +105,22 @@ int main() {
 		}
 		cout << "\n";
 	}
-	
-	/*for (auto v : clusters) {
-		cout <<"cluster " << count<<" :\n";
-		int p = 0;
-		for (auto u : v) {
-			cout << "\tpoint " << p << " : ";
-			for (auto z : u) {
-				cout  << z << " ";
+	cout << "size of clusters = " << clusters.size() << endl;
+	count = 0;
+	for (auto& cluster : clusters) {
+		cout << "cluster " << count << " :\n";
+		for (auto& u : cluster->getCells()) {
+			cout << "\t" << u->get_inst_name() << " : ";
+			for (auto z : u->getPos()) {
+				cout << z << " ";
 			}
 			cout << "\n";
-			p++;
 		}
 		cout << "\n";
 		count++;
-	}*/
+	}
+	
+	show();
 	return 0;
 }
 void input_file() {
@@ -168,7 +221,7 @@ void input_file() {
 			standard_FF.push_back(temp_cell);
 		}
 		else if (tokens[0] == "Gate") {
-			standard_FF.reserve(standard_FF.capacity() + 1);
+			standard_Gate.reserve(standard_Gate.capacity() + 1);
 			Cell temp_cell = { 0,tokens[1],stoi(tokens[2]) ,stoi(tokens[3]) ,stoi(tokens[4]) };
 
 			int time = stoi(tokens[4]);
@@ -184,12 +237,12 @@ void input_file() {
 				//total_pin.reserve(total_pin.capacity() + 1);
 				//total_pin.push_back(&temp_cell.ff_pin.at(temp_cell.ff_pin.size()-1));
 			}
-			standard_FF.push_back(temp_cell);
+			standard_Gate.push_back(temp_cell);
 		}
 		/////////////////////////////////////////////////////////////////
 		else if (tokens[0] == "NumInstances") {
 			int time = stoi(tokens[1]);
-			FF.reserve(FF.capacity() + time);
+			//FF.reserve(FF.capacity() + time);
 			while (time--) {
 				getline(file, line);
 				istringstream linestream(line);
@@ -197,14 +250,27 @@ void input_file() {
 				while (linestream >> token) {
 					tokens.push_back(token);
 				}
+				bool find = false;
 				for (auto v : standard_FF) {
 					if (v.get_ff_name() == tokens[2]) {
 						Cell temp_cell = v;
 						temp_cell.set_inst(tokens[1], stoi(tokens[3]), stoi(tokens[4]));
-						FF.push_back(temp_cell);
+						FF.emplace_back(temp_cell);
+						find = true;
 						break;
 					}
 				}
+				if (!find) {
+					for (auto v : standard_Gate) {
+						if (v.get_ff_name() == tokens[2]) {
+							Cell temp_cell = v;
+							temp_cell.set_inst(tokens[1], stoi(tokens[3]), stoi(tokens[4]));
+							Gate.emplace_back(temp_cell);
+							break;
+						}
+					}
+				}
+				
 			}
 		}
 		/////////////////////////////////////////////////////////////////
@@ -310,7 +376,7 @@ void input_file() {
 				if (v.get_inst_name() == tokens[1]) {
 					for (auto &iter : v.get_pin()) {
 						if (iter.get_pin_name() == tokens[2]) {
-							iter.set_timing_slack(stoi(tokens[3]));
+							iter.set_timing_slack(stof(tokens[3]));
 							cout << "set_timing_slack=" << iter.get_timing_slack();
 							break;
 						}
@@ -323,13 +389,13 @@ void input_file() {
 		else if (tokens[0] == "GatePower") {
 			for (auto &v : standard_FF) {
 				if (v.get_ff_name() == tokens[1]) {
-					v.set_power(stoi(tokens[2]));
+					v.set_power(stof(tokens[2]));
 					break;
 				}
 			}
 			for (auto &v : FF) {
 				if (v.get_ff_name() == tokens[1]) {
-					v.set_power(stoi(tokens[2]));
+					v.set_power(stof(tokens[2]));
 				}
 			}
 		}
@@ -364,9 +430,10 @@ void show() {
 	show_stardard_FF(standard_FF);
 	show_FF(FF);
 	show_netlist(netlist);
-	show_cluster(clusters);
+	//show_cluster(clusters);
 }
-void show_cluster(vector<vector<Cell*>> clusters) {
+void show_cluster(vector<Cluster*> clusters) {
+	
 	ofstream outFile("show_clusters_after_EMS.txt");
 	if (!outFile.is_open()) {
 		std::cerr << "無法打開檔案" << std::endl;
@@ -374,9 +441,9 @@ void show_cluster(vector<vector<Cell*>> clusters) {
 	}
 	outFile << "size of clusters = " << clusters.size() << endl;
 	int count = 0;
-	for (auto v : clusters) {
+	for (auto& v : clusters) {
 		outFile << "cluster " << count << " :\n";
-		for (auto u : v) {
+		for (auto& u : v->getCells()) {
 			outFile << "\t" << u->get_inst_name() << " : ";
 			for (auto z : u->getPos()) {
 				outFile << z << " ";
@@ -386,5 +453,6 @@ void show_cluster(vector<vector<Cell*>> clusters) {
 		outFile << "\n";
 		count++;
 	}
+	
 }
 

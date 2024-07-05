@@ -8,63 +8,100 @@
 #include "meanShift.h"
 #include "Cell.h"
 #include <algorithm>
+#define PI 3.1415926
 
-void meanShift(std::vector<Cell>& cells, float bandwidth,int K, vector<vector<Cell*>> &clusters) {
+struct Neighbor {
+    float distance;
+    Point point;
+    float variance;
+};
+
+void meanShift(std::vector<Cell>& cells, float max_bandwidth, int M, int K, float epsilon, vector<vector<Cell*>>& clusters) {
     cout << "start to meanShift\n";
     std::vector<Point> points;
-    for (const auto& cell : cells) {
+    for (auto& cell : cells) {
         points.push_back(cell.getPos());
     }
 
-    ClustersBuilder builder = ClustersBuilder(points, bandwidth);
+    vector<float> final_bandwidths;
+    if (M + 1 > points.size()) {
+        M = points.size() - 2;
+    }
+    for (int i = 0; i < points.size(); ++i) {
+
+        Point current_point = points[i];
+        vector<float> each_distance;
+        for (int j = 0; j < points.size(); ++j) {
+            float distance = current_point.euclideanDistance(points[j]);
+            each_distance.emplace_back(distance);
+        }
+        sort(each_distance.begin(), each_distance.end());
+        final_bandwidths.emplace_back(VariableBandwidth(max_bandwidth, each_distance[M + 1], cells[i]));
+    }
+
+    ClustersBuilder builder = ClustersBuilder(points, epsilon);
     long iterations = 0;
     unsigned long dimensions = points[0].dimensions();
-    float radius = bandwidth * 3;
-    float doubledSquaredBandwidth = 2 * bandwidth * bandwidth;
-
+    float radius = max_bandwidth * 3;
+    //float doubledSquaredBandwidth = 2 * max_bandwidth * max_bandwidth;
+    
+    
+    
     while (!builder.allPointsHaveStoppedShifting() && iterations < MAX_ITERATIONS) {
-        cout << "\tcalculate shifted point\n";
+        //cout << "\tcalculate shifted point\n";
 #pragma omp parallel for default(none) \
-            shared(points, dimensions, builder, bandwidth, radius, doubledSquaredBandwidth, cells, k) \
+            shared(points, dimensions, builder, max_bandwidth, final_bandwidths, radius, doubledSquaredBandwidth, cells, k) \
             schedule(dynamic)
+            
         for (long i = 0; i < points.size(); ++i) {
-            cout << "\t\tNo." << i << endl;
+            //cout << "\t\tNo." << i << endl;
             if (builder.hasStoppedShifting(i))
                 continue;
 
             Point newPosition(dimensions);
             Point pointToShift = builder.getShiftedPoint(i);
             float totalWeight = 0.0;
-
             // 找到最近的 k 个点
-            std::vector<std::pair<float, Point>> neighbors;
-            for (const auto& point : points) {
+            std::vector<Neighbor> neighbors;
+            for (int j = 0; j < points.size(); ++j) {
+                Point point = points[j];
                 float distance = pointToShift.euclideanDistance(point);
                 if (distance <= radius) {
-                    neighbors.emplace_back(distance, point);
+                    Neighbor temp = { distance,point,final_bandwidths[j] };
+                    neighbors.emplace_back(temp);
                 }
             }
-
             // 只保留最近的 k 个点
-            std::sort(neighbors.begin(), neighbors.end(), [](const std::pair<float, Point>& a, const std::pair<float, Point>& b) {
-                return a.first < b.first;
+            std::sort(neighbors.begin(), neighbors.end(), [](const Neighbor& a, const Neighbor& b) {
+                return a.distance < b.distance;
                 });
             if (neighbors.size() > K) {
                 neighbors.resize(K);
             }
-
+            /*
+            int count = 0;
+            for (auto c : neighbors) {
+                cout << count << " distance : " << c.distance << ", variance : " << c.variance<<endl;
+            }*/
             // 计算新位置
             for (const auto& neighbor : neighbors) {
-                float gaussian = std::exp(-(neighbor.first * neighbor.first) / doubledSquaredBandwidth);
-                newPosition += neighbor.second * gaussian;
+                
+                float gaussian = std::exp(-(neighbor.distance * neighbor.distance) / (2 * neighbor.variance * neighbor.variance));
+                
+                newPosition += neighbor.point * gaussian;
                 totalWeight += gaussian;
             }
-
             newPosition /= totalWeight;
+            if (iterations == 0) {
+                newPosition = (newPosition + pointToShift * 9) / 10;
+            }
+            
             builder.shiftPoint(i, newPosition);
         }
         ++iterations;
     }
+
+
 
     if (iterations == MAX_ITERATIONS)
         std::cout << "WARNING: reached the maximum number of iterations" << std::endl;
@@ -75,11 +112,14 @@ void meanShift(std::vector<Cell>& cells, float bandwidth,int K, vector<vector<Ce
     }
 
     
-    buildClustersWithEpsilon(cells, bandwidth,clusters);
+    buildClustersWithEpsilon(cells, epsilon,clusters);
     
 }
-
-void buildClustersWithEpsilon(std::vector<Cell>& cells, float epsilon, vector<vector<Cell*>> &clusters) {
+float VariableBandwidth(float max_distance,float Mth_distance,Cell cell) {
+    cout << "\tVariableBandwidth=" << std::min(max_distance, (float)(atan(cell.get_min_slack() - 5) / PI + 0.5) * Mth_distance) << "( " <<Mth_distance<<","<<cell.get_min_slack()<<"," << (atan(cell.get_min_slack() - 5) / PI + 0.5)  << " )" << endl;
+    return std::min(max_distance, (float)(atan(cell.get_min_slack()-5)/PI + 0.5) * Mth_distance);
+}
+void buildClustersWithEpsilon(std::vector<Cell>& cells, float epsilon, vector < vector<Cell*>>& clusters) {
     cout << "clustering with epsilon\n";
     //std::vector<Cluster> clusters;
     //std::vector<bool> visited(cells.size(), false);
@@ -116,6 +156,7 @@ void buildClustersWithEpsilon(std::vector<Cell>& cells, float epsilon, vector<ve
         for (int j = 0; j < boss.size();j++) {
             if (findRoot(i, connected) == boss[j]) {
                 clusters[j].emplace_back(&cells[i]);
+                //clusters[j].add_cell(&cells[i]);
                 create = false;
             }
         }

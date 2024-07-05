@@ -11,7 +11,8 @@
 #define MAX_ITERATIONS 100
 
 
-void meanShift(std::vector<Cell>& cells, float bandwidth,int K, vector<vector<Cell*>> &clusters);
-void buildClustersWithEpsilon(std::vector<Cell>& cells, float epsilon, vector<vector<Cell*>> &clusters);
+void meanShift(std::vector<Cell>& cells, float bandwidth, int M,int K, float epsilon, vector<vector<Cell*>>& clusters);
+float VariableBandwidth(float max_distance, float Mth_distance, Cell cell);
+void buildClustersWithEpsilon(std::vector<Cell>& cells, float epsilon, vector<vector<Cell*>>& clusters);
 int findRoot(int target, vector<int> &connected);
 #endif //MEANSHIFT_MEANSHIFT_HPP

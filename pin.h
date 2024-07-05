@@ -12,7 +12,7 @@ class Pin {
 private:
 	string pin_name;
 	int x_pos, y_pos;
-	int timing_slack;
+	float timing_slack;
 	Cell *belong;
 public:
 	Pin(string pin_name, int x_pos, int y_pos) {
@@ -22,9 +22,10 @@ public:
 		this->y_pos = y_pos;
 	}
 	////////set////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	void set_timing_slack(int temp) {
+	void set_timing_slack(float temp) {
 		timing_slack = temp;
 	}
+	
 	void set_belong(Cell* temp) {
 		belong = temp;
 	}
@@ -38,7 +39,7 @@ public:
 	int get_pin_ypos() {
 		return y_pos;
 	}
-	int get_timing_slack() {
+	float get_timing_slack() {
 		return timing_slack;
 	}
 	Cell* get_belong() {

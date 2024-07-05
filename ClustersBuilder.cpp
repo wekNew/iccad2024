@@ -6,14 +6,15 @@
 #include "ClustersBuilder.h"
 
 
-ClustersBuilder::ClustersBuilder(const std::vector<Point>& originalPoints, float clusterEps) {
+ClustersBuilder::ClustersBuilder(const std::vector<Point>& originalPoints, float epsilon) {
     this->originalPoints = originalPoints;
     shiftedPoints = originalPoints;
     // vector of booleans such that the element in position i is false if the i-th point
     // has stopped to shift
     shifting = std::vector<bool>(originalPoints.size(), true);
-    this->clusterEps = clusterEps;
-    this->shiftingEps = clusterEps / 10;
+    //this->clusterEps = clusterEps;
+    this->shiftingEps = 0.5*epsilon;
+    
 }
 
 
@@ -49,7 +50,7 @@ std::vector<Point>::iterator ClustersBuilder::end() {
     return shiftedPoints.end();
 }
 
-
+/*
 std::vector<Cluster> ClustersBuilder::buildClusters() {
     std::vector<Cluster> clusters;
 
@@ -59,7 +60,7 @@ std::vector<Cluster> ClustersBuilder::buildClusters() {
         auto it = clusters.begin();
         auto itEnd = clusters.end();
         while (it != itEnd) {
-            if (it->getCentroid().euclideanDistance(shiftedPoint) <= clusterEps) {
+            if (it->getCentroid().euclideanDistance(shiftedPoint) <= clusterEps[i]) {
                 // the point belongs to a cluster already created
                 it->addPoint(originalPoints[i]);
                 break;
@@ -74,4 +75,4 @@ std::vector<Cluster> ClustersBuilder::buildClusters() {
         }
     }
     return clusters;
-}
+}*/

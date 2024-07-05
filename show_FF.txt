@@ -4,7 +4,7 @@ C1:
 	x_pox	15	y_pos	20
 	height:	10	width	5
 	pincout:	2
-		pin:	D:(0,8)	TimingSlack=1
+		pin:	D:(0,8)	TimingSlack=10
 		pin:	Q:(5,8)	TimingSlack=0
 	QpinDelay:	1
 	gate_power:	10
@@ -14,48 +14,74 @@ C2:
 	x_pox	15	y_pos	0
 	height:	10	width	5
 	pincout:	2
-		pin:	D:(0,8)	TimingSlack=1
+		pin:	D:(0,8)	TimingSlack=10
 		pin:	Q:(5,8)	TimingSlack=0
 	QpinDelay:	1
 	gate_power:	10
 C3:
-	model:	FF2
-	bit:	2
+	model:	FF1
+	bit:	1
 	x_pox	40	y_pos	25
-	height:	10	width	8
-	pincout:	4
-		pin:	D0:(0,9)	TimingSlack=0
-		pin:	D1:(0,6)	TimingSlack=0
-		pin:	Q0:(8,9)	TimingSlack=0
-		pin:	Q1:(8,6)	TimingSlack=0
-	QpinDelay:	2
-	gate_power:	17
+	height:	10	width	5
+	pincout:	2
+		pin:	D:(0,8)	TimingSlack=10
+		pin:	Q:(5,8)	TimingSlack=0
+	QpinDelay:	1
+	gate_power:	10
 C4:
 	model:	FF1
 	bit:	1
 	x_pox	5	y_pos	10
 	height:	10	width	5
 	pincout:	2
-		pin:	D:(0,8)	TimingSlack=0
+		pin:	D:(0,8)	TimingSlack=4
 		pin:	Q:(5,8)	TimingSlack=0
 	QpinDelay:	1
 	gate_power:	10
 C5:
-	model:	FF2
-	bit:	2
-	x_pox	25	y_pos	20
-	height:	10	width	8
-	pincout:	4
-		pin:	D0:(0,9)	TimingSlack=0
-		pin:	D1:(0,6)	TimingSlack=0
-		pin:	Q0:(8,9)	TimingSlack=0
-		pin:	Q1:(8,6)	TimingSlack=0
-	QpinDelay:	2
-	gate_power:	17
-C6:
 	model:	FF1
 	bit:	1
-	x_pox	10	y_pos	5
+	x_pox	25	y_pos	20
+	height:	10	width	5
+	pincout:	2
+		pin:	D:(0,8)	TimingSlack=0
+		pin:	Q:(5,8)	TimingSlack=0
+	QpinDelay:	1
+	gate_power:	10
+C6'0:
+	model:	FF1
+	bit:	1
+	x_pox	0	y_pos	0
+	height:	10	width	5
+	pincout:	2
+		pin:	D:(0,8)	TimingSlack=0
+		pin:	Q:(5,8)	TimingSlack=0
+	QpinDelay:	1
+	gate_power:	10
+C7'0:
+	model:	FF1
+	bit:	1
+	x_pox	0	y_pos	0
+	height:	10	width	5
+	pincout:	2
+		pin:	D:(0,8)	TimingSlack=10
+		pin:	Q:(5,8)	TimingSlack=0
+	QpinDelay:	1
+	gate_power:	10
+C6'1:
+	model:	FF1
+	bit:	1
+	x_pox	0	y_pos	0
+	height:	10	width	5
+	pincout:	2
+		pin:	D:(0,8)	TimingSlack=5
+		pin:	Q:(5,8)	TimingSlack=0
+	QpinDelay:	1
+	gate_power:	10
+C7'1:
+	model:	FF1
+	bit:	1
+	x_pox	0	y_pos	0
 	height:	10	width	5
 	pincout:	2
 		pin:	D:(0,8)	TimingSlack=0

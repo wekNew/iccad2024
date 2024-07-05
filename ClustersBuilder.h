@@ -23,7 +23,7 @@ public:
 
     std::vector<Point>::iterator end();
 
-    std::vector<Cluster> buildClusters();
+    //std::vector<Cluster> buildClusters();
 
 private:
     std::vector<Point> originalPoints;
@@ -31,7 +31,7 @@ private:
     // vector of booleans such that the element in position i is false if the i-th point
     // has stopped to shift
     std::vector<bool> shifting;
-    float clusterEps;
+    //std::vector<float> clusterEps;
     float shiftingEps;
 };
 
