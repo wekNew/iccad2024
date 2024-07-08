@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include<cmath>
 #include<cstdlib>
 #include<vector>
@@ -225,6 +225,10 @@ void move_cluster(cluster& current_cluster, const vector<cluster>& overlap_clust
 				current_cluster.x_ordinate += unit_width;
 				cout << "C" << current_cluster.cluster_name << " move right: " << current_cluster.x_ordinate << "\n";				
 				current_cluster.p_right++;
+				if (current_cluster.x_ordinate  > max_x || current_cluster.x_ordinate+current_cluster.C[0].width>max_x) {
+					current_cluster.x_ordinate -= unit_width;
+					cout << "C"<<current_cluster.cluster_name << " 到最右邊界\n";
+				}
 				//cout << "move right " << current_cluster.p_right << " times\n";確認移動幾次
 				if (current_cluster.p_right >= max_penalty)
 					cout << "C" << current_cluster.cluster_name << " can not move right!!!\n";//penalty太大不能再往右
@@ -233,6 +237,10 @@ void move_cluster(cluster& current_cluster, const vector<cluster>& overlap_clust
 				current_cluster.x_ordinate -= unit_width;
 				cout << "C" << current_cluster.cluster_name << " move left: " << current_cluster.x_ordinate << "\n";				
 				current_cluster.p_left++;
+				if (current_cluster.x_ordinate <0 || current_cluster.x_ordinate + current_cluster.C[0].width <0) {
+					current_cluster.x_ordinate += unit_width;
+					cout << "C" << current_cluster.cluster_name << " 到最左邊界:";
+				}
 				//cout << "move left " << current_cluster.p_left << " times\n";
 				if (current_cluster.p_left >= max_penalty)
 					cout << "C" << current_cluster.cluster_name << " can not move left!!!\n";//penalty太大不能再往左
@@ -242,12 +250,22 @@ void move_cluster(cluster& current_cluster, const vector<cluster>& overlap_clust
 			if (nearest_cluster.y_ordinate > current_cluster.y_ordinate) { // 向上移动
 				cout << "C" << current_cluster.cluster_name << " move up\n";
 				current_cluster.y_ordinate += unit_height;
+				current_cluster.p_up++;
+				if (current_cluster.y_ordinate >max_y || current_cluster.y_ordinate + current_cluster.C[0].height > max_y) {
+					current_cluster.y_ordinate -= unit_height;
+					cout << "C" << current_cluster.cluster_name << " 到最上邊界\n";
+				}
 				if (current_cluster.p_up >= max_penalty)
 					cout << "C" << current_cluster.cluster_name << " can not move up!!!\n";//penalty太大不能再往上
 			}
 			else if (nearest_cluster.y_ordinate < current_cluster.y_ordinate) { // 向下移动
 				cout << "C" << current_cluster.cluster_name << " move down\n";
 				current_cluster.y_ordinate -= unit_height;
+				current_cluster.p_down++;
+				if (current_cluster.y_ordinate < 0 || current_cluster.y_ordinate + current_cluster.C[0].height < 0) {
+					current_cluster.y_ordinate += unit_height;
+					cout << "C" << current_cluster.cluster_name << " 到最下邊界\n";
+				}
 				if (current_cluster.p_down >= max_penalty)
 					cout << "C" << current_cluster.cluster_name << " can not move down!!!\n";//penalty太大不能再往下
 			}
