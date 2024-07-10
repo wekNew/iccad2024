@@ -4,7 +4,7 @@
 #include<string.h>
 #include<vector>
 using namespace std;
-#include "Pin.h"
+#include "pin.h"
 #ifndef	_NETLIST_H_
 #define _NETLIST_H_
 
@@ -59,4 +59,4 @@ public:
 	}
 };
 void show_netlist(NetList temp);
-#endif _NETLIST_H_
+#endif 
