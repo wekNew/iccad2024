@@ -85,7 +85,7 @@ int main() {
 		cout << "\n";
 		count++;
 	}
-
+	/*
 	for (auto& cluster : clusters) {
 		cout << "cluster" << endl;
 		
@@ -119,7 +119,7 @@ int main() {
 		cout << "\n";
 		count++;
 	}
-	
+	*/
 	show();
 	return 0;
 }

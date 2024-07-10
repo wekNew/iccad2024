@@ -19,6 +19,9 @@
     <Filter Include="algorithm\partition">
       <UniqueIdentifier>{7c98e1aa-8e22-4722-9c07-b757c77d2a9d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="algorithm\perturbation">
+      <UniqueIdentifier>{45896712-e294-4a03-8bd2-8be8fc116459}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -48,6 +51,12 @@
     <ClCompile Include="partition.cpp">
       <Filter>algorithm\partition</Filter>
     </ClCompile>
+    <ClCompile Include="perturbation.cpp">
+      <Filter>algorithm\perturbation</Filter>
+    </ClCompile>
+    <ClCompile Include="pin.cpp">
+      <Filter>component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pin.h">
@@ -76,6 +85,9 @@
     </ClInclude>
     <ClInclude Include="partition.h">
       <Filter>algorithm\partition</Filter>
+    </ClInclude>
+    <ClInclude Include="perturbation.h">
+      <Filter>algorithm\perturbation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

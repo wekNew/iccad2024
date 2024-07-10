@@ -147,4 +147,4 @@ public:
 void InitialDebanking(vector<Cell>& FF, vector<Cell*>& best_st_table);
 void show_stardard_FF(vector<Cell>& input);
 void show_FF(vector<Cell>& input);
-#endif _CELL_H_
+#endif 

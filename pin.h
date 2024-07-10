@@ -48,6 +48,6 @@ public:
 
 };
 void show_pin();
-#endif _PIN_H_
+#endif 
 
 
