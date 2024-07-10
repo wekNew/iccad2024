@@ -2,11 +2,8 @@
 #include <iostream>
 #include <cmath>
 #include <omp.h>
-#include "Point.h"
-#include "Cluster.h"
 #include "ClustersBuilder.h"
 #include "meanShift.h"
-#include "Cell.h"
 #include <algorithm>
 #define PI 3.1415926
 

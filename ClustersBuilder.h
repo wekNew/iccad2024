@@ -36,4 +36,4 @@ private:
 };
 
 
-#endif //MEANSHIFT_CLUSTERBUILDER_HPP
+#endif 

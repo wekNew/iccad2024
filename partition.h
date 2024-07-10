@@ -14,4 +14,4 @@ int findFarthestPtoP(vector<Cell*>& cells, Point& p);
 
 int findFarthestPointFromCentroid(vector<Cell*>& cells, vector<int>& clusterAssignment, int cluster, Point& centroid);
 
-#endif PARTITION_H
+#endif 

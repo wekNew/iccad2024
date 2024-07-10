@@ -12,19 +12,28 @@ using namespace std;
 #include "Cluster.h"
 #include "table.h"
 #include "partition.h"
+
+#include <chrono>
+
+#define START_TIMER(func) \
+    auto func##_start = std::chrono::high_resolution_clock::now();
+
+#define STOP_TIMER(func, description, logfile) \
+    auto func##_end = std::chrono::high_resolution_clock::now(); \
+    auto func##_duration = std::chrono::duration_cast<std::chrono::duration<double>>(func##_end - func##_start); \
+    logfile << description << " execution time: " << func##_duration.count() << " seconds" << std::endl;
 struct Die {
 	int x_min, y_min, x_max, y_max;
 	int input_pin_num, optput_pin_num;
 	vector<Pin> input_pin, output_pin;
 };
 
-
 string input_filename="test.txt";
 
 void input_file();
 void initialize();
 void show();
-void show_cluster(vector < vector < Cell* >> clusters);
+void show_cluster(vector < Cluster*> clusters);
 
 int alpha, beta, gamma, delta;
 int bin_width, bin_height, bin_max_util;
@@ -37,8 +46,10 @@ vector<Cell> standard_FF;
 vector<Cell> FF;
 vector<Cell> standard_Gate;
 vector<Cell> Gate;
-vector < vector < Cell* >> CLUSTERS;
+
 vector<Cluster*> clusters;
+vector < vector < Cell* >> CLUSTERS;
+
 NetList netlist;
 
 vector<combination> combi_table(MAX_BIT + 1);  //combinational table:use index to represent bit from 1 to MAXBIT
@@ -46,45 +57,47 @@ vector<Cell> MBFF;
 vector<Cell*> best_st_table; //record lowest cost standard FF
 
 int main() {
-	input_file();
-	initialize();
-	buildTable(standard_FF, combi_table, MBFF, best_st_table, beta, gamma);
-	InitialDebanking(FF,best_st_table);
 
 	float max_bandwidth = 6.0;
 	int K = 10;
 	int M = 4;
 	float epsilon = 0.1;
 
+	std::ofstream logfile("execution_times.log");
+	if (!logfile.is_open()) {
+		std::cerr << "Failed to open log file." << std::endl;
+		return 1;
+	}
+
+	START_TIMER(input_file)
+	input_file();
+	STOP_TIMER(input_file,"input_file()", logfile)
 	
+	START_TIMER(initialize)
+	initialize();
+	STOP_TIMER(initialize,"initialize()", logfile)
+
+	START_TIMER(buildTable)
+	buildTable(standard_FF, combi_table, MBFF, best_st_table, beta, gamma);
+	STOP_TIMER(buildTable,"buildTable()", logfile)
+
+	START_TIMER(InitialDebanking)
+	InitialDebanking(FF,best_st_table);
+	STOP_TIMER(InitialDebanking,"InitialDebanking()", logfile)
+
 	for (int i = 0; i < combi_table.size(); i++) {
 		cout << "index: " << i << " combi_1: " << combi_table[i].combi_1 << " combi_2: " << combi_table[i].combi_2 << endl;
 	}
 
+	START_TIMER(meanShift)
 	meanShift(FF, max_bandwidth,M,K,epsilon,CLUSTERS);
+	STOP_TIMER(meanShift,"meanShift()", logfile)
+
 	for (auto& v : CLUSTERS) {
-		Cluster* temp=new Cluster();
-		for (auto& u : v) {
-			temp->add_cell(u);
-			//cout << "adding cell:" << u->get_inst_name();
-		}
-		//cout << "\tsize is " << temp->getCells().size() << endl;
+		Cluster* temp=new Cluster(v);
 		clusters.emplace_back(temp);
 	}
-	cout << "size of clusters = " << clusters.size() << endl;
-	int count = 0;
-	for (auto& cluster : clusters) {
-		cout << "cluster " << count << " :\n";
-		for (auto& u : cluster->getCells()) {
-			cout << "\t" << u->get_inst_name() << " : ";
-			for (auto z : u->getPos()) {
-				cout << z << " ";
-			}
-			cout << "\n";
-		}
-		cout << "\n";
-		count++;
-	}
+	show_cluster(clusters);
 	/*
 	for (auto& cluster : clusters) {
 		cout << "cluster" << endl;
@@ -121,6 +134,7 @@ int main() {
 	}
 	*/
 	show();
+	logfile.close();
 	return 0;
 }
 void input_file() {
@@ -430,7 +444,7 @@ void show() {
 	show_stardard_FF(standard_FF);
 	show_FF(FF);
 	show_netlist(netlist);
-	//show_cluster(clusters);
+	
 }
 void show_cluster(vector<Cluster*> clusters) {
 	

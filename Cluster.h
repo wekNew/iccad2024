@@ -10,31 +10,8 @@ class Cluster {
 public:
     // 纐粄篶硑ㄧ计
     Cluster() = default;
-    /*
-    // ī篶硑ㄧ计
-    Cluster(const Cluster& other) : cells(other.cells), cluster_pos(other.cluster_pos) {}
+	Cluster(const std::vector<Cell*>& cells) : cells(cells) {}
 
-    // 结巨才
-    Cluster& operator=(const Cluster& other) {
-        if (this != &other) {
-            cells = other.cells;
-            cluster_pos = other.cluster_pos;
-        }
-        return *this;
-    }
-
-    // 簿笆篶硑ㄧ计
-    Cluster(Cluster&& other) noexcept : cells(std::move(other.cells)), cluster_pos(std::move(other.cluster_pos)) {}
-
-    // 簿笆结巨才
-    Cluster& operator=(Cluster&& other) noexcept {
-        if (this != &other) {
-            cells = std::move(other.cells);
-            cluster_pos = std::move(other.cluster_pos);
-        }
-        return *this;
-    }
-    */
 	void FindCentroid() {
 		Point temp = { 0.0, 0.0 };
 		for (const auto& v : cells) {
@@ -55,4 +32,4 @@ private:
 	std::vector<Cell*> cells;
 	Point cluster_pos;
 };
-#endif MEANSHIFT_CLUSTER_HPP
+#endif 

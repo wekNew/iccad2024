@@ -16,4 +16,4 @@ void perturbation(vector<Cell>& FF, vector<Cell> standard_FF, int max_population
 
 void ChangeSameBitCell(Cell& target_cell, vector<Cell> standard_FF, vector<int> standard_bit_index);
 
-#endif _PERTURBATION_H_
+#endif

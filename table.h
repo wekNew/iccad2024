@@ -7,6 +7,8 @@
 #include <vector>
 
 #define MAX_BIT 20
+#define INT_MAX 2147483647
+
 struct combination {
 	//	string name;
 	//	int power = INT_MAX;
@@ -19,4 +21,4 @@ struct combination {
 
 void buildTable(vector<Cell>& standard_FF, vector<combination>& combi_table, vector<Cell>& MBFF, vector<Cell*>& best_st_table, int beta, int gamma);
 
-#endif _TABLE_H_
+#endif 

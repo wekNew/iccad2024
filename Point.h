@@ -58,4 +58,4 @@ private:
      
 };
 
-#endif //MEANSHIFT_POINT_HPP
+#endif 
