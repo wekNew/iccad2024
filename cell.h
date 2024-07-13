@@ -25,6 +25,11 @@ private:
 	int q_pin_delay;
 	float gate_power;
 
+	int p_right;//penalty
+	int p_left;//penalty
+	int p_up;//penalty
+	int p_down;//penalty
+
 	vector<Cell*> children;
 
 public:
@@ -37,6 +42,21 @@ public:
 		cluster_num = -1;
 		children.clear();
 	}
+	//新的構造函數(用在legalize上面)
+    	Cell(int bit, int ff_width, int ff_height, int x_pos, int y_pos,int p_right, int p_left, int p_up, int p_down, int cluster_num) {
+		this->bit = bit;
+		this->ff_width = ff_width;
+		this->ff_height = ff_height;
+		this->x_pos = x_pos;
+		this->y_pos = y_pos;
+		this->p_right = p_right;
+		this->p_left = p_left;
+		this->p_up = p_up;
+		this->p_down = p_down;
+		this->cluster_num = cluster_num;
+		pin_count = 0;
+        	children.clear();
+    	}
 	void set_inst(string inst_name,int x_pos,int y_pos) {
 		this->inst_name = inst_name;
 		pos = { (float)x_pos,(float)y_pos };
@@ -69,6 +89,25 @@ public:
 	}
 	void set_clusterNum(int num) {
 		cluster_num = num;
+	}
+	void set_xpos(int x) {//直接setMBFF的x座標
+		x_pos = x;
+	}
+
+	void set_ypos(int y) {//直接setMBFF的y座標
+		y_pos = y;
+	}
+	void set_p_right(int penalty) {//penalty
+		p_right = penalty;
+	}
+	void set_p_left(int penalty) {//penalty
+		p_left = penalty;
+	}
+	void set_p_up(int penalty) {//penalty
+		p_up = penalty;
+	}
+	void set_p_down(int penalty) {//penalty
+		p_down = penalty;
 	}
 	////////get////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	int get_bit() {
@@ -126,6 +165,18 @@ public:
 	}
 	vector<Cell*> get_children() {
 		return children;
+	}
+	int get_p_right() {//penalty
+		return p_right;
+	}
+	int get_p_left() {//penalty
+		return p_left;
+	}
+	int get_p_up() {//penalty
+		return p_up;
+	}
+	int get_p_down() {//penalty
+		return p_down;
 	}
 	//////////////////////////////////////////////////////////////////////////
 	void change_pin(int index,Pin temp) {
