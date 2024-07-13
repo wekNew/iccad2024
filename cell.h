@@ -90,13 +90,6 @@ public:
 	void set_clusterNum(int num) {
 		cluster_num = num;
 	}
-	void set_xpos(int x) {//直接setMBFF的x座標
-		x_pos = x;
-	}
-
-	void set_ypos(int y) {//直接setMBFF的y座標
-		y_pos = y;
-	}
 	void set_p_right(int penalty) {//penalty
 		p_right = penalty;
 	}
