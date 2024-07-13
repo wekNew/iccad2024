@@ -9,7 +9,8 @@ touch makefile
 #把以下指令打到makefile檔中(只需要確保SRCS等號後，有所需的所有.cpp檔，所以有新增要自己補充上去)
 ---------------------------------------------------------------------------------------------------------------------------------------
 CXX = g++
-CXXFLAGS = -Wall -g
+CXXFLAGS = -Wall -O2 -std=c++11 -fopenmp
+LDFLAGS = -fopenmp
 TARGET = my_project 
 SRCS = main.cpp cell.cpp Cluster.cpp ClustersBuilder.cpp meanShift.cpp netlist.cpp partition.cpp pin.cpp Point.cpp table.cpp
 OBJS = $(SRCS:.cpp=.o)
@@ -17,6 +18,8 @@ $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+run: $(TARGET)
+	OMP_NUM_THREADS=4 ./$(TARGET)
 clean:
 	rm -f $(TARGET) $(OBJS)
 ------------------------------------------------------------------------------------------------------------------------------------------
