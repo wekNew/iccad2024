@@ -35,6 +35,9 @@ struct Event {
 	}
 };
 
+mbffInitialize(MBFF,best_st_table);
+
+
 void to_the_site(int& x, int& y) {//到site上
 	int new_x = x / binwidth;
 	int new_y = y / binheight;
