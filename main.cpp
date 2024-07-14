@@ -128,8 +128,8 @@ int main() {
 	STOP_TIMER(clusterToMBFF, "clusterToMBFF()", logfile);
 	
 	START_TIMER(legal)
-		for (int i = 0; i < FF.size(); i++) {
-			FF[i].set_clusterNum(i);
+		for (int i = 0; i < MBFF.size(); i++) {
+			MBFF[i].set_clusterNum(i);
 		}
 		legalize(MBFF,bin_width, bin_height, die.x_min,die.y_min,die.x_max,die.y_max);
 	STOP_TIMER(legal,"legalize()",logfile)
