@@ -133,6 +133,17 @@ void clusterToMBFF(vector<Cell*>& best_st_table,vector<Cell*>& cells, Point& clu
 			}
 		}
 		mbff_tmp.set_bit(mbff_tmp.get_children().size());
+		string inst_name;
+		if(mbff_tmp.get_children().size() != 1){
+			inst_name = "C" + to_string(ff_num+MBFF.size());
+		}else{
+			inst_name = mbff_tmp.get_children().at(0).get_inst_name();
+		}
+		mbff_tmp.set_inst_name(inst_name);
+		for(auto& st: best_st_table){
+			if(st->get_bit() == mbff_tmp.get_bit()){
+				mbff_tmp.set_ff_nam
+		}
 		MBFF.push_back(mbff_tmp);
 		clusterToMBFF(rm_cells, newCentroids[rm_cluster],combi_table, MBFF, combi_table[rm_cells.size()].combi_1, combi_table[rm_cells.size()].combi_2);
 	}
