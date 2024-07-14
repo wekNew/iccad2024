@@ -122,7 +122,7 @@ int main() {
 		cout << cluster->getCells().size()<< endl;
 		cout << combi_table[cluster->getCells().size()].combi_1 << endl;
 		cout << combi_table[cluster->getCells().size()].combi_2 << endl;
-		clusterToMBFF(best_st_table,cluster->getCells(), cluster->getPos(), combi_table, MBFF, combi_table[cluster->getCells().size()].combi_1, combi_table[cluster->getCells().size()].combi_2);
+		clusterToMBFF(best_st_table,cluster->getCells(), cluster->getPos(), combi_table, MBFF, combi_table[cluster->getCells().size()].combi_1, combi_table[cluster->getCells().size()].combi_2,FF.size());
 		cout << "MBFF size is : " << MBFF.size() << endl;
 	}
 	STOP_TIMER(clusterToMBFF, "clusterToMBFF()", logfile);
