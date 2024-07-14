@@ -4,7 +4,7 @@
 void clusterToMBFF(vector<Cell*>& best_st_table,vector<Cell*>& cells, Point& cluster_pos,vector<combination>& combi_table, vector<Cell>& MBFF, int st_size, int rm_size) {
 	cout << "start to clusterToMBFF" << endl;
 	if (rm_size != -1) {
-		//cout << "cluster_pos_pos = " << cluster_pos.access_Values().at(0) << "," << cluster_pos.access_Values().at(1) << endl;
+		
 		int centroid1 = findFarthestPtoP(cells, cluster_pos);
 		int centroid2 = findFarthestPtoP(cells, cells[centroid1]->get_pos_address());
 		
@@ -88,9 +88,6 @@ void clusterToMBFF(vector<Cell*>& best_st_table,vector<Cell*>& cells, Point& clu
 
 		// Calculate centroids based on current cluster assignments
 		Point tmp = {-1,-1};
-		//tmp.values.clear();
-		//tmp.values.push_back(-1);
-		//tmp.values.push_back(-1);
 		vector<Point> newCentroids(k, tmp);
 		clusterSize.assign(k, 0);
 
@@ -107,7 +104,6 @@ void clusterToMBFF(vector<Cell*>& best_st_table,vector<Cell*>& cells, Point& clu
 				newCentroids[j].access_Values().at(1) /= clusterSize[j];
 			}
 		}
-		//centroids = newCentroids;
 
 
 		//debug
