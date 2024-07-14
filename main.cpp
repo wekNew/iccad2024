@@ -128,7 +128,6 @@ int main() {
 	STOP_TIMER(clusterToMBFF, "clusterToMBFF()", logfile);
 	
 	START_TIMER(legal)
-		mbffInitialize(MBFF,best_st_table);
 		for (int i = 0; i < MBFF.size(); i++) {
 			MBFF[i].set_clusterNum(i);
 		}
