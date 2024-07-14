@@ -42,8 +42,8 @@ public:
 		cluster_num = -1;
 		children.clear();
 	}
-	//æ–°çš„æ§‹é€ å‡½æ•¸(ç”¨åœ¨legalizeä¸Šé¢)
-    	Cell(int bit, int ff_width, int ff_height, int x_pos, int y_pos,int p_right, int p_left, int p_up, int p_down, int cluster_num) {
+	//·sªººc³y¨ç¼Æ(¥Î¦blegalize¤W­±)
+	/*Cell(int bit, int ff_width, int ff_height, int x_pos, int y_pos, int p_right, int p_left, int p_up, int p_down, int cluster_num) {
 		this->bit = bit;
 		this->ff_width = ff_width;
 		this->ff_height = ff_height;
@@ -55,9 +55,9 @@ public:
 		this->p_down = p_down;
 		this->cluster_num = cluster_num;
 		pin_count = 0;
-        	children.clear();
-    	}
-	void set_inst(string inst_name,int x_pos,int y_pos) {
+		children.clear();
+	}*/
+	void set_inst(string inst_name, int x_pos, int y_pos) {
 		this->inst_name = inst_name;
 		pos = { (float)x_pos,(float)y_pos };
 		this->x_pos = x_pos;
@@ -77,12 +77,12 @@ public:
 	void set_q(int temp) {
 		q_pin_delay = temp;
 	}
-	void setPos ( Point newPos)
-	{ 
-		pos = newPos; 
+	void setPos(Point newPos)
+	{
+		pos = newPos;
 	}
 	void set_power(float temp) {
-		gate_power=temp;
+		gate_power = temp;
 	}
 	void set_children(vector<Cell*> children) {
 		this->children = children;
@@ -121,8 +121,8 @@ public:
 	vector<Pin>& get_pin() {
 		return ff_pin;
 	}
-	
-	Point getPos(){
+
+	Point getPos() {
 		return pos;
 	}
 	Point& get_pos_address() {
@@ -131,7 +131,7 @@ public:
 	int get_clusterNum() {
 		return cluster_num;
 	}
-	
+
 	int get_xpos() {
 		return x_pos;
 	}
@@ -150,7 +150,7 @@ public:
 	float get_min_slack() {
 		float min = 1000;
 		for (auto& v : ff_pin) {
-			if (v.get_pin_name().at(0)=='D' && v.get_timing_slack() < min) {
+			if (v.get_pin_name().at(0) == 'D' && v.get_timing_slack() < min) {
 				min = v.get_timing_slack();
 			}
 		}
@@ -172,7 +172,7 @@ public:
 		return p_down;
 	}
 	//////////////////////////////////////////////////////////////////////////
-	void change_pin(int index,Pin temp) {
+	void change_pin(int index, Pin temp) {
 		if (index < ff_pin.size()) {
 			ff_pin[index] = temp;
 		}

@@ -17,7 +17,7 @@ void meanShift(std::vector<Cell>& cells, float max_bandwidth, int M, int K, floa
     cout << "start to meanShift\n";
     std::vector<Point> points;
     for (auto& cell : cells) {
-        points.push_back(cell.getPos());
+        points.emplace_back(cell.getPos());
     }
 
     vector<float> final_bandwidths;
@@ -41,17 +41,16 @@ void meanShift(std::vector<Cell>& cells, float max_bandwidth, int M, int K, floa
     unsigned long dimensions = points[0].dimensions();
     float radius = max_bandwidth * 3;
     //float doubledSquaredBandwidth = 2 * max_bandwidth * max_bandwidth;
-    
+    //Point history_pos[MAX_ITERATIONS];
     
     
     while (!builder.allPointsHaveStoppedShifting() && iterations < MAX_ITERATIONS) {
-        //cout << "\tcalculate shifted point\n";
 #pragma omp parallel for default(none) \
-            shared(points, dimensions, builder, max_bandwidth, final_bandwidths, radius, doubledSquaredBandwidth, cells, k) \
+            shared(points, dimensions, builder, max_bandwidth, final_bandwidths, radius,iteration, cells, K) \
             schedule(dynamic)
-            
+        //cout << "\tcalculate shifted point\n";
         for (long i = 0; i < points.size(); ++i) {
-            //cout << "\t\tNo." << i << endl;
+            
             if (builder.hasStoppedShifting(i))
                 continue;
 
@@ -92,7 +91,10 @@ void meanShift(std::vector<Cell>& cells, float max_bandwidth, int M, int K, floa
             if (iterations == 0) {
                 newPosition = (newPosition + pointToShift * 9) / 10;
             }
-            
+            if (cells[i].get_inst_name() == "C102688") {
+                //history_pos[iterations] = newPosition;
+            }
+            #pragma omp critical
             builder.shiftPoint(i, newPosition);
         }
         ++iterations;
@@ -100,8 +102,25 @@ void meanShift(std::vector<Cell>& cells, float max_bandwidth, int M, int K, floa
 
 
 
-    if (iterations == MAX_ITERATIONS)
+    if (iterations == MAX_ITERATIONS) {
         std::cout << "WARNING: reached the maximum number of iterations" << std::endl;
+        int notfinish = 0;
+        for (int i = 0; i < cells.size(); ++i) {
+            if (!builder.hasStoppedShifting(i)) {
+                //cout << "cell : " << cells[i].get_inst_name() << "still wanna shift" << endl;
+                notfinish++;
+            }
+        }
+        cout << "Total point still wanne shift : " << notfinish << endl;
+        /*for (int i = 1; i < MAX_ITERATIONS; i++) {
+            cout << "C102688 at iteration " << i << " from (" << history_pos[i-1].access_Values().at(0) << "," << history_pos[i - 1].access_Values().at(1) << ") to ("
+                << history_pos[i].access_Values().at(0) << "," << history_pos[i].access_Values().at(1) << ")\tTotal moving : " << history_pos[i].euclideanDistance(history_pos[i - 1]) << endl;
+        }*/
+    }
+    else {
+        cout << "run to iteration : " << iterations << endl;
+    }
+        
 
     // 将新的位置应用回 cells
     for (long i = 0; i < points.size(); ++i) {

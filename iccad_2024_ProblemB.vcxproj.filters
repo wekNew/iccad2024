@@ -22,6 +22,9 @@
     <Filter Include="algorithm\perturbation">
       <UniqueIdentifier>{45896712-e294-4a03-8bd2-8be8fc116459}</UniqueIdentifier>
     </Filter>
+    <Filter Include="algorithm\legalize">
+      <UniqueIdentifier>{fe0f0d48-96d6-486c-9567-80340acc93e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -57,6 +60,9 @@
     <ClCompile Include="pin.cpp">
       <Filter>component</Filter>
     </ClCompile>
+    <ClCompile Include="legalize.cpp">
+      <Filter>algorithm\legalize</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pin.h">
@@ -88,6 +94,9 @@
     </ClInclude>
     <ClInclude Include="perturbation.h">
       <Filter>algorithm\perturbation</Filter>
+    </ClInclude>
+    <ClInclude Include="legalize.h">
+      <Filter>algorithm\legalize</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

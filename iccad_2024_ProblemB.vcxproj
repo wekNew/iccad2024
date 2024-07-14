@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="cell.cpp" />
     <ClCompile Include="ClustersBuilder.cpp" />
+    <ClCompile Include="legalize.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="meanShift.cpp" />
     <ClCompile Include="netlist.cpp" />
@@ -34,6 +35,7 @@
   <ItemGroup>
     <ClInclude Include="Cluster.h" />
     <ClInclude Include="ClustersBuilder.h" />
+    <ClInclude Include="legalize.h" />
     <ClInclude Include="partition.h" />
     <ClInclude Include="meanShift.h" />
     <ClInclude Include="perturbation.h" />

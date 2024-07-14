@@ -1,10 +1,10 @@
 #include "partition.h"
 
-//vector<Cell> MBFF;
 
-void clusterToMBFF(vector<Cell*>& cells, Point& cluster_pos,vector<combination>& combi_table, vector<Cell> MBFF, int st_size, int rm_size) {
+void clusterToMBFF(vector<Cell*>& cells, Point& cluster_pos,vector<combination>& combi_table, vector<Cell>& MBFF, int st_size, int rm_size) {
 	cout << "start to clusterToMBFF" << endl;
 	if (rm_size != -1) {
+		//cout << "cluster_pos_pos = " << cluster_pos.access_Values().at(0) << "," << cluster_pos.access_Values().at(1) << endl;
 		int centroid1 = findFarthestPtoP(cells, cluster_pos);
 		int centroid2 = findFarthestPtoP(cells, cells[centroid1]->get_pos_address());
 		
@@ -153,13 +153,16 @@ void clusterToMBFF(vector<Cell*>& cells, Point& cluster_pos,vector<combination>&
 
 
 int findFarthestPtoP(vector<Cell*>& cells, Point& p) {
-	cout << "start to findFarthestP2P" << endl;
+	//cout << "start to findFarthestP2P" << endl;
 	double maxDist = -1;
 	int farthestIndex = -1;
-
+	//cout << "p_pos = " << p.access_Values().at(0) << "," << p.access_Values().at(1) << endl;
 	for (int i = 0; i < cells.size(); i++) {
-		//double dist = distance(cells[i]->getPos(), p);
+		cout << "i : " << i << endl;
+		cout << cells[i]->getPos().access_Values().at(0) << "," << cells[i]->getPos().access_Values().at(1) << endl;
+		//double dist = distance(cells[i]->get_pos_address(), p);
 		double dist = cells[i]->getPos().euclideanDistance(p);
+		
 		if (dist > maxDist) {
 			maxDist = dist;
 			farthestIndex = i;
@@ -167,16 +170,17 @@ int findFarthestPtoP(vector<Cell*>& cells, Point& p) {
 	}
 	return farthestIndex;
 }
-/*
+
 double distance(Point& a, Point& b) {
-	return sqrt(pow(a.values[0] - b.values[0], 2) + pow(a.values[1] - b.values[1], 2));
-}*/
+	return sqrt(pow(a.access_Values().at(0) - b.access_Values().at(0), 2) + pow(a.access_Values().at(1) - b.access_Values().at(1), 2));
+}
 
 int findFarthestPointFromCentroid(vector<Cell*>& cells, vector<int>& clusterAssignment, int cluster, Point& centroid) {
 	double maxDist = -1;
 	int farthestIndex = -1;
 
 	for (int i = 0; i < cells.size(); ++i) {
+		
 		if (clusterAssignment[i] == cluster) {
 			//double dist = distance(cells[i]->getPos(), centroid);
 			double dist = cells[i]->getPos().euclideanDistance(centroid);

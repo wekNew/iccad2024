@@ -8,10 +8,10 @@
 
 
 
-void clusterToMBFF(vector<Cell*>& cells, Point& cluster_pos, vector<combination>& combi_table, vector<Cell> MBFF, int st_size, int rm_size);
+void clusterToMBFF(vector<Cell*>& cells, Point& cluster_pos, vector<combination>& combi_table, vector<Cell>& MBFF, int st_size, int rm_size);
 
 int findFarthestPtoP(vector<Cell*>& cells, Point& p);
-
+double distance(Point& a, Point& b);
 int findFarthestPointFromCentroid(vector<Cell*>& cells, vector<int>& clusterAssignment, int cluster, Point& centroid);
 
 #endif 

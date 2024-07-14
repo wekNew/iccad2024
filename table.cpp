@@ -3,8 +3,8 @@
 using namespace std;
 
 
-void buildCombiTable(vector<combination>& combi_table, vector<Cell*>& best_st_table,int beta,int gamma,int max_cluster_size) {
-	combi_table.resize(max_cluster_size+1);
+void buildCombiTable(vector<combination>& combi_table, vector<Cell*>& best_st_table, int beta, int gamma, int max_cluster_size) {
+	combi_table.resize(max_cluster_size + 1);
 	for (int i = 1; i <= max_cluster_size; i++) {
 		for (auto st : best_st_table) {
 			int st_bit = st->get_bit();
@@ -30,7 +30,7 @@ void buildCombiTable(vector<combination>& combi_table, vector<Cell*>& best_st_ta
 		}
 	}
 }
-void buildBestStTable(vector<Cell>& standard_FF, vector<Cell*>& best_st_table,int beta,int gamma) {
+void buildBestStTable(vector<Cell>& standard_FF, vector<Cell*>& best_st_table, int beta, int gamma) {
 
 	for (auto& st : standard_FF) {
 		int cost = INT_MAX;

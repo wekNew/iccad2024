@@ -1,5 +1,8 @@
-input_file() execution time: 0.0040712 seconds
-initialize() execution time: 4.29e-05 seconds
-buildTable() execution time: 0.0001983 seconds
-InitialDebanking() execution time: 0.0006539 seconds
-meanShift() execution time: 0.0105003 seconds
+input_file() execution time: 0.007599 seconds
+initialize() execution time: 5.95e-05 seconds
+buildBestStTable() execution time: 0.000259 seconds
+InitialDebanking() execution time: 0.0007406 seconds
+meanShift() execution time: 0.0107112 seconds
+buildCombiTable() execution time: 1.68e-05 seconds
+clusterToMBFF() execution time: 0.0140943 seconds
+legalize() execution time: 0.0026074 seconds

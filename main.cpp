@@ -12,6 +12,7 @@ using namespace std;
 #include "Cluster.h"
 #include "table.h"
 #include "partition.h"
+#include "legalize.h"
 
 #include <chrono>
 
@@ -28,8 +29,8 @@ struct Die {
 	vector<Pin> input_pin, output_pin;
 };
 
-string input_filename="test.txt";
-
+//string input_filename="testcase1_0614.txt";
+string input_filename = "test.txt";
 void input_file();
 void initialize();
 void show();
@@ -52,7 +53,7 @@ vector < vector < Cell* >> CLUSTERS;
 
 NetList netlist;
 
-vector<combination> combi_table(MAX_BIT + 1);  //combinational table:use index to represent bit from 1 to MAXBIT
+vector<combination> combi_table(1);  //combinational table:use index to represent bit from 1 to MAXBIT
 vector<Cell> MBFF;
 vector<Cell*> best_st_table; //record lowest cost standard FF
 
@@ -70,45 +71,71 @@ int main() {
 	}
 
 	START_TIMER(input_file)
-	input_file();
+		input_file();
 	STOP_TIMER(input_file,"input_file()", logfile)
 	
 	START_TIMER(initialize)
-	initialize();
-	STOP_TIMER(initialize,"initialize()", logfile)
+		initialize();
+	STOP_TIMER(initialize, "initialize()", logfile)
 
-	START_TIMER(buildTable)
-	buildTable(standard_FF, combi_table, MBFF, best_st_table, beta, gamma);
-	STOP_TIMER(buildTable,"buildTable()", logfile)
+		//show();
+
+
+	START_TIMER(buildBestStTable)
+		buildBestStTable(standard_FF, best_st_table, beta, gamma);
+	STOP_TIMER(buildBestStTable,"buildBestStTable()", logfile)
 
 	START_TIMER(InitialDebanking)
-	InitialDebanking(FF,best_st_table);
+		InitialDebanking(FF,best_st_table);
 	STOP_TIMER(InitialDebanking,"InitialDebanking()", logfile)
+
+	
+	
+	START_TIMER(meanShift)
+	meanShift(FF, max_bandwidth,M,K,epsilon,CLUSTERS);
+	STOP_TIMER(meanShift, "meanShift()", logfile)
+
+	int max_cluster_size = 0;
+	for (auto& v : CLUSTERS) {
+		Cluster* temp=new Cluster(v);
+		temp->FindCentroid();
+		clusters.emplace_back(temp);
+		
+		if (v.size() > max_cluster_size) {
+			max_cluster_size = v.size();
+		}
+	}
+	show_cluster(clusters);
+	
+
+	START_TIMER(buildCombiTable)
+		buildCombiTable(combi_table, best_st_table, beta, gamma, max_cluster_size);
+	STOP_TIMER(buildCombiTable, "buildCombiTable()", logfile)
 
 	for (int i = 0; i < combi_table.size(); i++) {
 		cout << "index: " << i << " combi_1: " << combi_table[i].combi_1 << " combi_2: " << combi_table[i].combi_2 << endl;
 	}
 
-	START_TIMER(meanShift)
-	meanShift(FF, max_bandwidth,M,K,epsilon,CLUSTERS);
-	STOP_TIMER(meanShift,"meanShift()", logfile)
-
-	for (auto& v : CLUSTERS) {
-		Cluster* temp=new Cluster(v);
-		clusters.emplace_back(temp);
-	}
-	show_cluster(clusters);
-	/*
+	START_TIMER(clusterToMBFF)
 	for (auto& cluster : clusters) {
 		cout << "cluster" << endl;
-		
 		cout << cluster->getCells().size()<< endl;
 		cout << combi_table[cluster->getCells().size()].combi_1 << endl;
 		cout << combi_table[cluster->getCells().size()].combi_2 << endl;
 		clusterToMBFF(cluster->getCells(), cluster->getPos(), combi_table, MBFF, combi_table[cluster->getCells().size()].combi_1, combi_table[cluster->getCells().size()].combi_2);
+		cout << "MBFF size is : " << MBFF.size() << endl;
 	}
+	STOP_TIMER(clusterToMBFF, "clusterToMBFF()", logfile);
 	
+	START_TIMER(legal)
+		for (int i = 0; i < FF.size(); i++) {
+			FF[i].set_clusterNum(i);
+		}
+		legalize(MBFF);
+	STOP_TIMER(legal,"legalize()",logfile)
 	
+
+	/*
 	// ¥´¦Lµ²ªG
 	cout << "\n";
 	for (auto v : FF) {
@@ -133,7 +160,7 @@ int main() {
 		count++;
 	}
 	*/
-	show();
+	
 	logfile.close();
 	return 0;
 }
@@ -151,9 +178,8 @@ void input_file() {
 
 		vector<string> tokens;
 		string token;
-		if (count % 2 == 0) {
-			cout << "\tcurrent read to line " << count<<endl;
-		}
+		
+		cout << "\tcurrent read to line " << count <<" : "<<line << endl;
 		while (linestream >> token) {
 			tokens.push_back(token);
 		}
@@ -391,7 +417,7 @@ void input_file() {
 					for (auto &iter : v.get_pin()) {
 						if (iter.get_pin_name() == tokens[2]) {
 							iter.set_timing_slack(stof(tokens[3]));
-							cout << "set_timing_slack=" << iter.get_timing_slack();
+							cout << "set_timing_slack=" << iter.get_timing_slack()<<endl;
 							break;
 						}
 					}
@@ -415,6 +441,8 @@ void input_file() {
 		}
 		/////////////////////////////////////////////////////////////////
 		count++;
+		//file.ignore(numeric_limits<streamsize>::max(), '\n');
+		fflush(stdin);
 	}
 	cout << "end of read file\n";
 	file.close();
@@ -437,10 +465,9 @@ void initialize() {
 			total_pin.push_back(&u);
 		}
 	}
-
+	
 }
 void show() {
-	
 	show_stardard_FF(standard_FF);
 	show_FF(FF);
 	show_netlist(netlist);
