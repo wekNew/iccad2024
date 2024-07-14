@@ -19,6 +19,6 @@ struct combination {
 	int cost = INT_MAX;
 };
 
-void buildTable(vector<Cell>& standard_FF, vector<combination>& combi_table, vector<Cell>& MBFF, vector<Cell*>& best_st_table, int beta, int gamma);
-
+void buildCombiTable(vector<Cell>& standard_FF, vector<combination>& combi_table, vector<Cell>& MBFF, vector<Cell*>& best_st_table, int beta, int gamma);
+void buildBestStTable(vector<Cell>& standard_FF, vector<combination>& combi_table, vector<Cell>& MBFF, vector<Cell*>& best_st_table, int beta, int gamma);
 #endif 
