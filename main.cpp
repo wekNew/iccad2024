@@ -131,12 +131,12 @@ int main() {
 		for (int i = 0; i < FF.size(); i++) {
 			FF[i].set_clusterNum(i);
 		}
-		legalize(MBFF);
+		legalize(MBFF,bin_width, bin_height, die.x_min,die.y_min,die.x_max,die.y_max);
 	STOP_TIMER(legal,"legalize()",logfile)
 	
 
 	/*
-	// ¥´¦Lµ²ªG
+	// æ‰“å°çµæžœ
 	cout << "\n";
 	for (auto v : FF) {
 		cout << v.get_inst_name() << "'s pos: ";
@@ -168,7 +168,7 @@ void input_file() {
 	cout << "start to read file\n";
 	ifstream file(input_filename);
 	if (!file.is_open()) {
-		cout << "µLªk¥´¶}ÀÉ®×" << endl;
+		cout << "ç„¡æ³•æ‰“é–‹æª”æ¡ˆ" << endl;
 		return;
 	}
 	string line;
@@ -340,7 +340,7 @@ void input_file() {
 					size_t pos = tokens[1].find('/');
 					
 					if (pos != string::npos) {
-						string before = tokens[1].substr(0, pos); // ´£¨ú¤À³Î¦r¤¸¤§«eªº³¡¤À
+						string before = tokens[1].substr(0, pos); // æå–åˆ†å‰²å­—å…ƒä¹‹å‰çš„éƒ¨åˆ†
 						string after = tokens[1].substr(pos + 1);
 						for (auto& v : FF) {
 							if (v.get_inst_name() == before) {
@@ -477,7 +477,7 @@ void show_cluster(vector<Cluster*> clusters) {
 	
 	ofstream outFile("show_clusters_after_EMS.txt");
 	if (!outFile.is_open()) {
-		std::cerr << "µLªk¥´¶}ÀÉ®×" << std::endl;
+		std::cerr << "ç„¡æ³•æ‰“é–‹æª”æ¡ˆ" << std::endl;
 		return;
 	}
 	outFile << "size of clusters = " << clusters.size() << endl;
