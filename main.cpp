@@ -35,6 +35,8 @@ void input_file();
 void initialize();
 void show();
 void show_cluster(vector < Cluster*> clusters);
+float costFunc(vector<Cell>& mbff);
+
 
 int alpha, beta, gamma, delta;
 int bin_width, bin_height, bin_max_util;
