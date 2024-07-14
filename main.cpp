@@ -498,4 +498,50 @@ void show_cluster(vector<Cluster*> clusters) {
 	}
 	
 }
+float costFunc(vector<Cell>& mbff)
+{
+	int die_width = die.x_max - die.x_min;
+	int die_height = die.y_max - die.y_min;
+	int bin_area = bin_width * bin_height;
+	vector<vector<double>> bins_util(ceil((double)die_width / (double)bin_width), vector<double>(ceil((double)die_height / (double)bin_height), 0));
+	
+	float cost = 0;
 
+	
+
+	for (auto& reg : mbff) {
+		cost += gamma * reg.get_ff_height() * reg.get_ff_width();
+		cost += beta * reg.get_power();
+		
+		int left_x = (reg.getPos().access_Values().at(0) - die.x_min);
+		int right_x = (reg.getPos().access_Values().at(0) + reg.get_ff_width() - die.x_min) ;
+		int down_y = (reg.getPos().access_Values().at(1) - die.y_min);
+		int up_y = (reg.getPos().access_Values().at(1) + reg.get_ff_height() - die.y_min);
+		
+		int start_row = floor((float)left_x / (float)bin_width);
+		int end_row = ceil((float)right_x / (float)bin_width)-1;
+		int start_col = floor((float)down_y / (float)bin_height);
+		int end_col = ceil((float)up_y / (float)bin_height)-1;
+
+
+		for (int r = start_row; r <= end_row; ++r) {
+			for (int c = start_col; c <= end_col; ++c) {
+				int intersect_width = min((r+1) * bin_width, right_x) - max(r * bin_width, left_x);
+				int intersect_height = min((c + 1) * bin_height, up_y) - max(c * bin_height, down_y);
+				int intersect_area = intersect_width * intersect_height;
+				double usage_ratio = (double)(intersect_area)/(double)bin_area;
+				bins_util.at(r).at(c) += usage_ratio;
+			}
+		}
+	}
+	
+	for (int i = 0; i < bins_util.size(); i++) {
+		for (int j = 0; j < bins_util.at(0).size(); j++) {
+			cout << bins_util.at(i).at(j) << " ";
+			if (bins_util.at(i).at(j) > (bin_max_util/100)) cost += delta;
+		}
+		cout << endl;
+	}
+
+	return cost;
+}
