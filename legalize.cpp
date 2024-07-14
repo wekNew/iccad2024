@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include<cmath>
 #include<cstdlib>
 #include<vector>
@@ -14,13 +14,13 @@
 
 using namespace std;
 
-int BinWidth = 100;
-int BinHeight = 100;
 int BinMaxUtil = 75;
-int sitewidth = 5;
-int siteheight = 10;
-int max_x = 50;
-int max_y = 100;
+int binwidth = 0;
+int binheight = 0;
+int Die_max_x = 0;
+int Die_max_y = 0;
+int Die_min_x = 0;
+int Die_min_y = 0;
 int max_penalty = 10;
 
 struct Event {
@@ -36,10 +36,10 @@ struct Event {
 };
 
 void to_the_site(int& x, int& y) {//到site上
-	int new_x = x / sitewidth;
-	int new_y = y / siteheight;
-	x = sitewidth * new_x;
-	y = siteheight * new_y;
+	int new_x = x / binwidth;
+	int new_y = y / binheight;
+	x = binwidth * new_x;
+	y = binheight * new_y;
 	cout << ",\tafter shift,\tx:" << x << ",\ty:" << y;
 }
 
@@ -112,6 +112,7 @@ void find_horizontal_overlaps(vector<Cell>& MBFF, unordered_map<int, unordered_s
 				int active_end_x = MBFF[active_idx].getPos().access_Values().at(0) + MBFF[active_idx].get_ff_width();
 				int event_end_x = MBFF[event.cluster_idx].getPos().access_Values().at(0) + MBFF[event.cluster_idx].get_ff_width();
 				if (MBFF[event.cluster_idx].getPos().access_Values().at(0) < active_end_x && MBFF[active_idx].getPos().access_Values().at(0) < event_end_x) {
+					cout << "C" << MBFF[active_idx].get_clusterNum() << "&C" << MBFF[event.cluster_idx].get_clusterNum() << " overlap\n";
 					overlap_graph[MBFF[active_idx].get_clusterNum()].insert(MBFF[event.cluster_idx].get_clusterNum());
 					overlap_graph[MBFF[event.cluster_idx].get_clusterNum()].insert(MBFF[active_idx].get_clusterNum());
 				}
@@ -160,8 +161,8 @@ void merge_horizontal_vertical_overlap(set<pair<int, int>>& edges1, set<pair<int
 	for (const auto& edge1 : edges1) {
 		for (const auto& edge2 : edges2) {
 			if ((edge1.first == edge2.first && edge1.second == edge2.second) || (edge1.first == edge2.second && edge1.second == edge2.first)) {
-				//cout << "overlap edge: " << edge1.first << ", " << edge1.second << "\n";檢查overlap graph
-				need_move_overlap_edges.push_back({ MBFF[edge1.first], MBFF[edge1.second] });  // 插入 pair<cluster, cluster>
+				cout << "overlap edge: " << edge1.first << ", " << edge1.second << "\n";//檢查overlap graph
+				need_move_overlap_edges.push_back({ MBFF[edge1.first], MBFF[edge1.second] });  // 插入 pair<cell, cell>
 				overlap_edges.insert(edge1);
 				break;
 			}
@@ -171,6 +172,7 @@ void merge_horizontal_vertical_overlap(set<pair<int, int>>& edges1, set<pair<int
 		overlap_cluster.insert(edge1.first);
 		overlap_cluster.insert(edge1.second);
 	}
+	cout << "finish merge_overlaps\n";
 }
 
 bool check_overlap(Cell& cluster1, Cell& cluster2) {
@@ -215,8 +217,8 @@ bool samewidth(Cell& cluster1, Cell& cluster2) {
 }
 int completely_overlap_move = 0;//完全重疊的次數
 void move_cluster(Cell& current_cluster, const vector<Cell>& overlap_clusters, vector<Cell>& MBFF) {
-	int unit_width = static_cast<int>(sitewidth);
-	int unit_height = static_cast<int>(siteheight);
+	int unit_width = static_cast<int>(binwidth);
+	int unit_height = static_cast<int>(binheight);
 	vector<Cell> nearest_overlap = find_nearest_overlap_cluster(current_cluster, overlap_clusters);
 	int x = current_cluster.getPos().access_Values().at(0);
 	int y = current_cluster.getPos().access_Values().at(1);
@@ -238,7 +240,7 @@ void move_cluster(Cell& current_cluster, const vector<Cell>& overlap_clusters, v
 				x = current_cluster.getPos().access_Values().at(0) + unit_width;//改x座標這邊也要改
 				cout << "C" << current_cluster.get_clusterNum() << " move right: " << current_cluster.getPos().access_Values().at(0) << "\n";
 				p_right++;
-				if (current_cluster.getPos().access_Values().at(0) > max_x || current_cluster.getPos().access_Values().at(0) + current_cluster.get_ff_width() > max_x) {
+				if (current_cluster.getPos().access_Values().at(0) > Die_max_x || current_cluster.getPos().access_Values().at(0) + current_cluster.get_ff_width() > Die_max_x) {
 					x = current_cluster.getPos().access_Values().at(0) - unit_width;
 					cout << "C" << current_cluster.get_clusterNum() << " 到最右邊界\n";
 				}
@@ -250,7 +252,7 @@ void move_cluster(Cell& current_cluster, const vector<Cell>& overlap_clusters, v
 				x = current_cluster.getPos().access_Values().at(0) - unit_width;
 				cout << "C" << current_cluster.get_clusterNum() << " move left: " << current_cluster.getPos().access_Values().at(0) << "\n";
 				p_left++;
-				if (current_cluster.getPos().access_Values().at(0) < 0 || current_cluster.getPos().access_Values().at(0) + current_cluster.get_ff_width() < 0) {
+				if (current_cluster.getPos().access_Values().at(0) < Die_min_x || current_cluster.getPos().access_Values().at(0) + current_cluster.get_ff_width() < Die_min_x) {
 					x = current_cluster.getPos().access_Values().at(0) + unit_width;
 					cout << "C" << current_cluster.get_clusterNum() << " 到最左邊界:";
 				}
@@ -264,7 +266,7 @@ void move_cluster(Cell& current_cluster, const vector<Cell>& overlap_clusters, v
 				cout << "C" << current_cluster.get_clusterNum() << " move up\n";
 				y = current_cluster.getPos().access_Values().at(1) + unit_height;
 				p_up++;
-				if (current_cluster.getPos().access_Values().at(1) > max_y || current_cluster.getPos().access_Values().at(1) + current_cluster.get_ff_height() > max_y) {
+				if (current_cluster.getPos().access_Values().at(1) > Die_max_y || current_cluster.getPos().access_Values().at(1) + current_cluster.get_ff_height() > Die_max_y) {
 					y = current_cluster.getPos().access_Values().at(1) - unit_height;
 					cout << "C" << current_cluster.get_clusterNum() << " 到最下邊界\n";
 				}
@@ -275,7 +277,7 @@ void move_cluster(Cell& current_cluster, const vector<Cell>& overlap_clusters, v
 				cout << "C" << current_cluster.get_clusterNum() << " move down\n";
 				y = current_cluster.getPos().access_Values().at(1) - unit_height;
 				p_down++;
-				if (current_cluster.getPos().access_Values().at(1) < 0 || current_cluster.getPos().access_Values().at(1) + current_cluster.get_ff_height() < 0) {
+				if (current_cluster.getPos().access_Values().at(1) < Die_min_y || current_cluster.getPos().access_Values().at(1) + current_cluster.get_ff_height() < Die_min_y) {
 					y = current_cluster.getPos().access_Values().at(1) + unit_height;
 					cout << "C" << current_cluster.get_clusterNum() << " 到最下邊界\n";
 				}
@@ -337,8 +339,14 @@ queue<Cell> get_overlap_clusters(vector<Cell>& MBFF, vector<pair<Cell, Cell>>& n
 	find_vertical_overlaps(MBFF, overlap_vertical_graph);
 	vertical_overlaps_edges.clear();
 	horizontal_overlaps_edges.clear();
+	
+	cout << "finish find_horizontal_overlaps、find_vertical_overlaps\n";
+	
 	creat_overlap_edge(overlap_vertical_graph, 1);//1:vettical,2:horizontal
 	creat_overlap_edge(overlap_horizontal_graph, 2);
+	
+	cout << "finish overlap_edge\n";
+	
 	set<pair<int, int>> overlap_edges;
 	set<int> overlap_cluster;
 
@@ -419,7 +427,14 @@ void shift_until_legal(vector<Cell> overlap_clusters, queue<Cell>& overlap_queue
 	}
 }
 
-void legalize(vector<Cell>& MBFF) {
+void legalize(vector<Cell>& MBFF,int bin_width, int bin_height, int die_x_min, int die_y_min, int die_x_max, int die_y_max) {
+	binwidth = bin_width;
+	binheight = bin_height;
+	Die_max_x = die_x_max;
+	Die_max_y = die_y_max;
+	Die_min_x = die_x_min;
+	Die_min_y = die_y_min;
+	cout <<"unit: " << bin_width << ", " << bin_height<<"\n";
 	for (auto& cell : MBFF) {
 		int x = cell.getPos().access_Values().at(0);
 		int y = cell.getPos().access_Values().at(1);
@@ -432,6 +447,7 @@ void legalize(vector<Cell>& MBFF) {
 		cell.set_ypos(y);*/
 		cout << "\n";
 	}
+	cout << "finish to the site\n";
 
 	vector<pair<Cell, Cell>> need_move_overlap_edges;
 	vector<Cell> overlap_clusters;
