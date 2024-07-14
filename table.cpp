@@ -3,7 +3,7 @@
 using namespace std;
 
 
-void buildCombiTable(vector<combination>& combi_table, vector<Cell>& MBFF, vector<Cell*>& best_st_table,int beta,int gamma,int max_cluster_size) {
+void buildCombiTable(vector<combination>& combi_table, vector<Cell*>& best_st_table,int beta,int gamma,int max_cluster_size) {
 	combi_table.resize(max_cluster_size+1);
 	for (int i = 1; i <= max_cluster_size; i++) {
 		for (auto st : best_st_table) {
@@ -22,8 +22,6 @@ void buildCombiTable(vector<combination>& combi_table, vector<Cell>& MBFF, vecto
 			}
 			else {
 				if ((beta * st_power + gamma * st_area) < combi_table[i].cost) {
-					//combi_table[i].power = st_power;
-					//combi_table[i].area = st_area;
 					combi_table[i].cost = st_cost;
 					combi_table[i].combi_1 = st_bit;
 					combi_table[i].combi_2 = -1;
