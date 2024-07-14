@@ -42,7 +42,7 @@ public:
 		cluster_num = -1;
 		children.clear();
 	}
-	//·sªººc³y¨ç¼Æ(¥Î¦blegalize¤W­±)
+	//Â·sÂªÂºÂºcÂ³yÂ¨Ã§Â¼Ã†(Â¥ÃŽÂ¦blegalizeÂ¤WÂ­Â±)
 	/*Cell(int bit, int ff_width, int ff_height, int x_pos, int y_pos, int p_right, int p_left, int p_up, int p_down, int cluster_num) {
 		this->bit = bit;
 		this->ff_width = ff_width;
@@ -101,6 +101,9 @@ public:
 	}
 	void set_p_down(int penalty) {//penalty
 		p_down = penalty;
+	}
+	void set_ff_name(string name){
+		ff_name = name;
 	}
 	////////get////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	int get_bit() {
