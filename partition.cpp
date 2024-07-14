@@ -1,7 +1,7 @@
 #include "partition.h"
 
 
-void clusterToMBFF(vector<Cell*>& cells, Point& cluster_pos,vector<combination>& combi_table, vector<Cell>& MBFF, int st_size, int rm_size) {
+void clusterToMBFF(vector<Cell*>& best_st_table,vector<Cell*>& cells, Point& cluster_pos,vector<combination>& combi_table, vector<Cell>& MBFF, int st_size, int rm_size) {
 	cout << "start to clusterToMBFF" << endl;
 	if (rm_size != -1) {
 		//cout << "cluster_pos_pos = " << cluster_pos.access_Values().at(0) << "," << cluster_pos.access_Values().at(1) << endl;
