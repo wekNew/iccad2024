@@ -32,7 +32,7 @@ void buildCombiTable(vector<combination>& combi_table, vector<Cell>& MBFF, vecto
 		}
 	}
 }
-void buildBestStTable(vector<Cell>& standard_FF, vector<Cell>& MBFF, vector<Cell*>& best_st_table,int beta,int gamma) {
+void buildBestStTable(vector<Cell>& standard_FF, vector<Cell*>& best_st_table,int beta,int gamma) {
 
 	for (auto& st : standard_FF) {
 		int cost = INT_MAX;
