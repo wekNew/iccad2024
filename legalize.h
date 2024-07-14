@@ -35,5 +35,4 @@ void move_cluster(Cell& current_cluster, const vector<Cell>& overlap_clusters, v
 queue<Cell> get_overlap_clusters(vector<Cell>& clusters, vector<pair<Cell, Cell>>& need_move_overlap_edges, vector<Cell>& overlap_clusters);
 void shift_until_legal(vector<Cell> overlap_clusters, queue<Cell>& overlap_queue, vector<Cell>& clusters, vector<pair<Cell, Cell>>& need_move_overlap_edges);
 void legalize(vector<Cell>& clusters,int bin_width,int bin_height,int die_x_min,int die_y_min,int die_x_max,int die_y_max);
-void mbffInitialize(MBFF,best_st_table);
 #endif // LEGALIZE_H
