@@ -1,0 +1,35 @@
+C1:
+	lib: 	FF1
+	pos: 	15 20
+	size:	5 10
+	from:	C1 
+C2:
+	lib: 	FF1
+	pos: 	11.0817 2.74082
+	size:	5 10
+	from:	C2 
+C3:
+	lib: 	FF1
+	pos: 	40 25
+	size:	5 10
+	from:	C3 
+C12:
+	lib: 	notyet
+	pos: 	9.88808 1.83188
+	size:	-1 -1
+	from:	
+C13:
+	lib: 	notyet
+	pos: 	10.3953 2.32627
+	size:	-1 -1
+	from:	
+C14:
+	lib: 	FF2
+	pos: 	10.402 2.32184
+	size:	8 10
+	from:	C4 C7'1 
+C5:
+	lib: 	FF1
+	pos: 	14.8925 19.6862
+	size:	5 10
+	from:	C5 

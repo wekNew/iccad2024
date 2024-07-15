@@ -9,7 +9,7 @@
 
 
 
-void clusterToMBFF(vector<Cell*>& best_st_table,vector<Cell*>& cells, Point& cluster_pos, vector<combination>& combi_table, vector<Cell>& MBFF, int st_size, int rm_size,int ff_num);
+void clusterToMBFF(vector<Cell*>& best_st_table, vector<Cell*>& cells, Point& cluster_pos, vector<combination>& combi_table, vector<Cell>& MBFF, int st_size, int rm_size, int ff_num);
 
 int findFarthestPtoP(vector<Cell*>& cells, Point& p);
 double distance(Point& a, Point& b);

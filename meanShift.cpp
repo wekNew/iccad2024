@@ -46,7 +46,7 @@ void meanShift(std::vector<Cell>& cells, float max_bandwidth, int M, int K, floa
     
     while (!builder.allPointsHaveStoppedShifting() && iterations < MAX_ITERATIONS) {
 #pragma omp parallel for default(none) \
-            shared(points, dimensions, builder, max_bandwidth, final_bandwidths, radius,iteration, cells, K) \
+            shared(points, dimensions, builder, max_bandwidth, final_bandwidths, radius,iterations, cells, K) \
             schedule(dynamic)
         //cout << "\tcalculate shifted point\n";
         for (long i = 0; i < points.size(); ++i) {

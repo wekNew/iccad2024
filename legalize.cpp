@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include<cmath>
 #include<cstdlib>
 #include<vector>
@@ -341,14 +341,14 @@ queue<Cell> get_overlap_clusters(vector<Cell>& MBFF, vector<pair<Cell, Cell>>& n
 	find_vertical_overlaps(MBFF, overlap_vertical_graph);
 	vertical_overlaps_edges.clear();
 	horizontal_overlaps_edges.clear();
-	
+
 	cout << "finish find_horizontal_overlaps、find_vertical_overlaps\n";
-	
+
 	creat_overlap_edge(overlap_vertical_graph, 1);//1:vettical,2:horizontal
 	creat_overlap_edge(overlap_horizontal_graph, 2);
-	
+
 	cout << "finish overlap_edge\n";
-	
+
 	set<pair<int, int>> overlap_edges;
 	set<int> overlap_cluster;
 
@@ -429,14 +429,14 @@ void shift_until_legal(vector<Cell> overlap_clusters, queue<Cell>& overlap_queue
 	}
 }
 
-void legalize(vector<Cell>& MBFF,int bin_width, int bin_height, int die_x_min, int die_y_min, int die_x_max, int die_y_max) {
+void legalize(vector<Cell>& MBFF, int bin_width, int bin_height, int die_x_min, int die_y_min, int die_x_max, int die_y_max) {
 	binwidth = bin_width;
 	binheight = bin_height;
 	Die_max_x = die_x_max;
 	Die_max_y = die_y_max;
 	Die_min_x = die_x_min;
 	Die_min_y = die_y_min;
-	cout <<"unit: " << bin_width << ", " << bin_height<<"\n";
+	cout << "unit: " << bin_width << ", " << bin_height << "\n";
 	for (auto& cell : MBFF) {
 		int x = cell.getPos().access_Values().at(0);
 		int y = cell.getPos().access_Values().at(1);

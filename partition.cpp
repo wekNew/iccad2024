@@ -1,13 +1,13 @@
 #include "partition.h"
 
 
-void clusterToMBFF(vector<Cell*>& best_st_table,vector<Cell*>& cells, Point& cluster_pos,vector<combination>& combi_table, vector<Cell>& MBFF, int st_size, int rm_size,int ff_num) {
+void clusterToMBFF(vector<Cell*>& best_st_table, vector<Cell*>& cells, Point& cluster_pos, vector<combination>& combi_table, vector<Cell>& MBFF, int st_size, int rm_size, int ff_num) {
 	cout << "start to clusterToMBFF" << endl;
 	if (rm_size != -1) {
-		
+
 		int centroid1 = findFarthestPtoP(cells, cluster_pos);
 		int centroid2 = findFarthestPtoP(cells, cells[centroid1]->get_pos_address());
-		
+
 		// Initial centroids
 		vector<Point> centroids;
 		centroids.push_back(cells[centroid1]->getPos());
@@ -87,7 +87,7 @@ void clusterToMBFF(vector<Cell*>& best_st_table,vector<Cell*>& cells, Point& clu
 		}
 
 		// Calculate centroids based on current cluster assignments
-		Point tmp = {-1,-1};
+		Point tmp = { -1,-1 };
 		vector<Point> newCentroids(k, tmp);
 		clusterSize.assign(k, 0);
 
@@ -134,14 +134,15 @@ void clusterToMBFF(vector<Cell*>& best_st_table,vector<Cell*>& cells, Point& clu
 		}
 		mbff_tmp.set_bit(mbff_tmp.get_children().size());
 		string inst_name;
-		if(mbff_tmp.get_children().size() != 1){
-			inst_name = "C" + to_string(ff_num+MBFF.size());
-		}else{
-			inst_name = mbff_tmp.get_children().at(0).get_inst_name();
+		if (mbff_tmp.get_children().size() != 1) {
+			inst_name = "C" + to_string(ff_num + MBFF.size());
+		}
+		else {
+			inst_name = mbff_tmp.get_children().at(0)->get_inst_name();
 		}
 		mbff_tmp.set_inst_name(inst_name);
-		for(auto& st: best_st_table){
-			if(st->get_bit() == mbff_tmp.get_bit()){
+		for (auto& st : best_st_table) {
+			if (st->get_bit() == mbff_tmp.get_bit()) {
 				mbff_tmp.set_ff_name(st->get_ff_name());
 				mbff_tmp.set_power(st->get_power());
 				mbff_tmp.set_ff_width(st->get_ff_width());
@@ -149,24 +150,25 @@ void clusterToMBFF(vector<Cell*>& best_st_table,vector<Cell*>& cells, Point& clu
 			}
 		}
 		MBFF.push_back(mbff_tmp);
-		clusterToMBFF(rm_cells, newCentroids[rm_cluster],combi_table, MBFF, combi_table[rm_cells.size()].combi_1, combi_table[rm_cells.size()].combi_2);
+		clusterToMBFF(best_st_table, rm_cells, newCentroids[rm_cluster], combi_table, MBFF, combi_table[rm_cells.size()].combi_1, combi_table[rm_cells.size()].combi_2,ff_num);
 	}
 	else {
 		//build mbff
-		Cell mbff_tmp(cells.size(),"notyet",-1,-1,-1);
+		Cell mbff_tmp(cells.size(), "notyet", -1, -1, -1);
 		//mbff_tmp.bit = cells.size();
 		mbff_tmp.setPos(cluster_pos);
 		mbff_tmp.set_children(cells);
 		mbff_tmp.set_bit(mbff_tmp.get_children().size());
 		string inst_name;
-		if(mbff_tmp.get_children().size() != 1){
-			inst_name = "C" + to_string(ff_num+MBFF.size());
-		}else{
-			inst_name = mbff_tmp.get_children().at(0).get_inst_name();
+		if (mbff_tmp.get_children().size() != 1) {
+			inst_name = "C" + to_string(ff_num + MBFF.size());
+		}
+		else {
+			inst_name = mbff_tmp.get_children().at(0)->get_inst_name();
 		}
 		mbff_tmp.set_inst_name(inst_name);
-		for(auto& st: best_st_table){
-			if(st->get_bit() == mbff_tmp.get_bit()){
+		for (auto& st : best_st_table) {
+			if (st->get_bit() == mbff_tmp.get_bit()) {
 				mbff_tmp.set_ff_name(st->get_ff_name());
 				mbff_tmp.set_power(st->get_power());
 				mbff_tmp.set_ff_width(st->get_ff_width());
@@ -189,7 +191,7 @@ int findFarthestPtoP(vector<Cell*>& cells, Point& p) {
 		cout << cells[i]->getPos().access_Values().at(0) << "," << cells[i]->getPos().access_Values().at(1) << endl;
 		//double dist = distance(cells[i]->get_pos_address(), p);
 		double dist = cells[i]->getPos().euclideanDistance(p);
-		
+
 		if (dist > maxDist) {
 			maxDist = dist;
 			farthestIndex = i;
@@ -207,7 +209,7 @@ int findFarthestPointFromCentroid(vector<Cell*>& cells, vector<int>& clusterAssi
 	int farthestIndex = -1;
 
 	for (int i = 0; i < cells.size(); ++i) {
-		
+
 		if (clusterAssignment[i] == cluster) {
 			//double dist = distance(cells[i]->getPos(), centroid);
 			double dist = cells[i]->getPos().euclideanDistance(centroid);

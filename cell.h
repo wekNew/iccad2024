@@ -17,7 +17,7 @@ private:
 	int ff_width, ff_height;
 	int pin_count;
 	vector<Pin> ff_pin;
-	int x_pos, y_pos;
+	float x_pos, y_pos;
 	Point pos;
 	string inst_name;
 	int cluster_num;
@@ -42,24 +42,10 @@ public:
 		cluster_num = -1;
 		children.clear();
 	}
-	//·sªººc³y¨ç¼Æ(¥Î¦blegalize¤W­±)
-	/*Cell(int bit, int ff_width, int ff_height, int x_pos, int y_pos, int p_right, int p_left, int p_up, int p_down, int cluster_num) {
-		this->bit = bit;
-		this->ff_width = ff_width;
-		this->ff_height = ff_height;
-		this->x_pos = x_pos;
-		this->y_pos = y_pos;
-		this->p_right = p_right;
-		this->p_left = p_left;
-		this->p_up = p_up;
-		this->p_down = p_down;
-		this->cluster_num = cluster_num;
-		pin_count = 0;
-		children.clear();
-	}*/
-	void set_inst(string inst_name, int x_pos, int y_pos) {
+	
+	void set_inst(string inst_name, float x_pos, float y_pos) {
 		this->inst_name = inst_name;
-		pos = { (float)x_pos,(float)y_pos };
+		pos = { x_pos,y_pos };
 		this->x_pos = x_pos;
 		this->y_pos = y_pos;
 	}
@@ -69,6 +55,12 @@ public:
 	}
 	void set_inst_name(string temp) {
 		inst_name = temp;
+	}
+	void set_ff_height(int temp) {
+		ff_height = temp;
+	}
+	void set_ff_width(int temp) {
+		ff_width = temp;
 	}
 	void set_pin(Pin temp) {
 		ff_pin.reserve(ff_pin.capacity() + 1);
@@ -102,7 +94,7 @@ public:
 	void set_p_down(int penalty) {//penalty
 		p_down = penalty;
 	}
-	void set_ff_name(string name){
+	void set_ff_name(string name) {
 		ff_name = name;
 	}
 	////////get////////////////////////////////////////////////////////////////////////////////////////////////////////////////

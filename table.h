@@ -2,7 +2,7 @@
 #ifndef	_TABLE_H_
 #define _TABLE_H_
 
-#include "cell.h"
+
 #include "cell.h"
 #include <vector>
 
