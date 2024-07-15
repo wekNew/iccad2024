@@ -386,13 +386,16 @@ queue<Cell> get_overlap_clusters(vector<Cell>& MBFF, vector<pair<Cell, Cell>>& n
 		overlap_clusters.push_back(MBFF[cluster_idx]);
 	}
 	auto poriority_bigger = [](Cell& cluster1, Cell& cluster2) {//先比平均的slack再比bit
-		if (slack_bigger(cluster1, cluster2) == 1) {
+		if (slack_bigger(cluster1, cluster2)) {
 			return true;
+		}
+		else if (slack_bigger(cluster2, cluster1)) {
+			return false;
 		}
 		else {
 			return cluster1.get_bit() > cluster2.get_bit();
-		}
-		};
+		}	
+	};
 	sort(overlap_clusters.begin(), overlap_clusters.end(), poriority_bigger);//依照poriority先去排我的overlap clusters
 	for (auto& cl : overlap_clusters) {//把cluster轉換成queue
 		overlap_queue.push(cl);
