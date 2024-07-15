@@ -3,6 +3,7 @@
 
 void clusterToMBFF(vector<Cell*>& best_st_table, vector<Cell*>& cells, Point& cluster_pos, vector<combination>& combi_table, vector<Cell>& MBFF, int st_size, int rm_size, int ff_num) {
 	cout << "start to clusterToMBFF" << endl;
+	if(cells.size() == 0) return;
 	if (rm_size != -1) {
 
 		int centroid1 = findFarthestPtoP(cells, cluster_pos);
