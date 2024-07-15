@@ -2,7 +2,7 @@ Alpha 1
 Beta 5
 Gamma 5
 Delta 1
-DieSize 0 0 50 30
+DieSize 0 0 1000 1000
 NumInput 2
 Input INPUT0 0 25
 Input INPUT1 0 5

@@ -151,7 +151,7 @@ public:
 		}
 		return min;
 	}
-	vector<Cell*> get_children() {
+	vector<Cell*>& get_children() {
 		return children;
 	}
 	int get_p_right() {//penalty

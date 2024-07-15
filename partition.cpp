@@ -3,7 +3,7 @@
 
 void clusterToMBFF(vector<Cell*>& best_st_table, vector<Cell*>& cells, Point& cluster_pos, vector<combination>& combi_table, vector<Cell>& MBFF, int st_size, int rm_size, int ff_num) {
 	cout << "start to clusterToMBFF" << endl;
-	if(cells.size() == 0) return;
+	if (cells.size() == 0) return;
 	if (rm_size != -1) {
 
 		int centroid1 = findFarthestPtoP(cells, cluster_pos);
@@ -127,12 +127,15 @@ void clusterToMBFF(vector<Cell*>& best_st_table, vector<Cell*>& cells, Point& cl
 		vector<Cell*> rm_cells;
 		for (int i = 0; i < clusterAssignment.size(); ++i) {
 			if (clusterAssignment[i] == st_cluster) {
-				mbff_tmp.get_children().push_back(cells[i]);
+				mbff_tmp.get_children().emplace_back(cells[i]);
+				cout << "\tfind st_cluster : " << cells[i]->get_inst_name() << endl;
 			}
 			else {
-				rm_cells.push_back(cells[i]);
+				rm_cells.emplace_back(cells[i]);
+				cout << "\tnot find st_cluster, push back :  " << cells[i]->get_inst_name() << endl;
 			}
 		}
+		cout << "\tmbff_tmp's children size is " << mbff_tmp.get_children().size() << endl;
 		mbff_tmp.set_bit(mbff_tmp.get_children().size());
 		string inst_name;
 		if (mbff_tmp.get_children().size() != 1) {
@@ -142,6 +145,10 @@ void clusterToMBFF(vector<Cell*>& best_st_table, vector<Cell*>& cells, Point& cl
 			inst_name = mbff_tmp.get_children().at(0)->get_inst_name();
 		}
 		mbff_tmp.set_inst_name(inst_name);
+		if (mbff_tmp.get_inst_name() == "C12") {
+			cout << "C12 THere : bit is " <<mbff_tmp.get_bit()<< endl;
+			cout << "clusterAssignment.size() =  " << clusterAssignment.size() << endl;
+		}
 		for (auto& st : best_st_table) {
 			if (st->get_bit() == mbff_tmp.get_bit()) {
 				mbff_tmp.set_ff_name(st->get_ff_name());
@@ -151,7 +158,7 @@ void clusterToMBFF(vector<Cell*>& best_st_table, vector<Cell*>& cells, Point& cl
 			}
 		}
 		MBFF.push_back(mbff_tmp);
-		clusterToMBFF(best_st_table, rm_cells, newCentroids[rm_cluster], combi_table, MBFF, combi_table[rm_cells.size()].combi_1, combi_table[rm_cells.size()].combi_2,ff_num);
+		clusterToMBFF(best_st_table, rm_cells, newCentroids[rm_cluster], combi_table, MBFF, combi_table[rm_cells.size()].combi_1, combi_table[rm_cells.size()].combi_2, ff_num);
 	}
 	else {
 		//build mbff
@@ -168,6 +175,9 @@ void clusterToMBFF(vector<Cell*>& best_st_table, vector<Cell*>& cells, Point& cl
 			inst_name = mbff_tmp.get_children().at(0)->get_inst_name();
 		}
 		mbff_tmp.set_inst_name(inst_name);
+		if (mbff_tmp.get_inst_name() == "C12") {
+			cout << "C12 Here" << endl;
+		}
 		for (auto& st : best_st_table) {
 			if (st->get_bit() == mbff_tmp.get_bit()) {
 				mbff_tmp.set_ff_name(st->get_ff_name());

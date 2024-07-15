@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include<cmath>
 #include<cstdlib>
 #include<vector>
@@ -392,8 +392,8 @@ queue<Cell> get_overlap_clusters(vector<Cell>& MBFF, vector<pair<Cell, Cell>>& n
 		}
 		else {
 			return cluster1.get_bit() > cluster2.get_bit();
-		}	
-	};
+		}
+		};
 	sort(overlap_clusters.begin(), overlap_clusters.end(), poriority_bigger);//依照poriority先去排我的overlap clusters
 	for (auto& cl : overlap_clusters) {//把cluster轉換成queue
 		overlap_queue.push(cl);

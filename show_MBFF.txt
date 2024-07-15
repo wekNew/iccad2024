@@ -13,16 +13,16 @@ C3:
 	pos: 	40 25
 	size:	5 10
 	from:	C3 
-C12:
-	lib: 	notyet
+C6'1:
+	lib: 	FF1
 	pos: 	9.88808 1.83188
-	size:	-1 -1
-	from:	
+	size:	5 10
+	from:	C6'1 
 C13:
-	lib: 	notyet
+	lib: 	FF2
 	pos: 	10.3953 2.32627
-	size:	-1 -1
-	from:	
+	size:	8 10
+	from:	C6'0 C7'0 
 C14:
 	lib: 	FF2
 	pos: 	10.402 2.32184
