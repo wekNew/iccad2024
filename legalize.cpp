@@ -8,9 +8,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "legalize.h"
-#include"Cell.h"
-#include"Point.h"
-#include"Partition.h"
+
 
 using namespace std;
 
