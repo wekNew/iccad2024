@@ -167,14 +167,14 @@ void merge_horizontal_vertical_overlap(set<pair<int, int>>& edges1, set<pair<int
 				//cout << "overlap edge: " << edge1.first << ", " << edge1.second << "\n";//檢查overlap graph
 				need_move_overlap_edges.push_back({ MBFF[edge1.first], MBFF[edge1.second] });  // 插入 pair<cell, cell>
 				overlap_edges.insert(edge1);
+				overlap_cluster.insert(edge1.first);
+				overlap_cluster.insert(edge1.second);
 				break;
 			}
 		}
+		
 	}
-	for (const auto& edge1 : overlap_edges) {//overlap_edges是vector<int>的資料結構
-		overlap_cluster.insert(edge1.first);
-		overlap_cluster.insert(edge1.second);
-	}
+	
 	//cout << "finish merge_overlaps\n";
 }
 
@@ -457,44 +457,47 @@ void legalize(vector<Cell>& MBFF, int bin_width, int bin_height, int die_x_min, 
 		Point new_position({ static_cast<float>(x), static_cast<float>(y) });
 
 		cell.setPos(new_position);
-		/*cell.set_xpos(x);  // 更新 x_pos、y_pos
-		cell.set_ypos(y);*/
 		cout << "\n";
 	}
 	//cout << "finish to the site\n";
-
+	int n = MBFF.size();
 	vector<pair<Cell, Cell>> need_move_overlap_edges;
+	need_move_overlap_edges.reserve(n);
 	vector<Cell> overlap_clusters;
+	overlap_clusters.reserve(n);
 	queue<Cell> overlap_queue;
 	overlap_queue = get_overlap_clusters(MBFF, need_move_overlap_edges, overlap_clusters);
 
 	shift_until_legal(overlap_clusters, overlap_queue, MBFF, need_move_overlap_edges);
 	/////////匈牙利演算法input/////////
-	vector<Pin*> D_MBFF;
+	/*vector<Pin*> D_MBFF;
 	vector<Pin*> Q_MBFF;
 	vector<Pin*> D_children;
 	vector<Pin*> Q_children;
-	
-	for (int i = 0;i< MBFF.size();i++) {
+
+	for (int i = 0; i < MBFF.size(); i++) {
 		//cout << "\n匈牙利演算法" << "\n";
-		int num_of_pin=MBFF[i].get_pin_count();
-		vector<Pin> pins = MBFF[i].get_pin();
+		for (auto& st : best_st_table) {
+			if (st->get_bit() == MBFF[i].get_bit()) {
+				//MBFF[i].set_pin(st->get_pin());
+			}
+		}
 		//cout << "pin size:" << num_of_pin << "\n";
-        /*for (Pin& pin : pins) {
+		for (Pin& pin : pins) {
 			cout << "pin\n";
 			int relatively_x=pin.get_pin_pos().access_Values().at(0);
 			int relatively_y=pin.get_pin_pos().access_Values().at(1);
 			int x=cluster.get_xpos();
 			int y=cluster.get_ypos();
 			cout << "\nrelatively_x: "<< relatively_x << " ,relatively_y: " << relatively_y << "\n";
-            if (pin.get_pin_name().substr(0, 1) == "D") {				
-                D_MBFF.push_back(&pin);
-            }else if (pin.get_pin_name().substr(0, 1) == "Q") {
+			if (pin.get_pin_name().substr(0, 1) == "D") {
+				D_MBFF.push_back(&pin);
+			}else if (pin.get_pin_name().substr(0, 1) == "Q") {
 				Q_MBFF.push_back(&pin);
 			}
-        }
-		for (Cell* children :cluster.get_children()) {			
-			vector<Pin>& pins_children = children->get_pin();			
+		}
+		for (Cell* children :cluster.get_children()) {
+			vector<Pin>& pins_children = children->get_pin();
 			for (Pin& pin : pins_children) {
 				int relatively_x = pin.get_pin_xpos();
 				int relatively_y = pin.get_pin_ypos();
@@ -505,6 +508,6 @@ void legalize(vector<Cell>& MBFF, int bin_width, int bin_height, int die_x_min, 
 					Q_children.push_back(&pin);
 				}
 			}
-		}*/
-	}
+		}
+	}*/
 }
