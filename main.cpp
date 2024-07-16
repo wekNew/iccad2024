@@ -150,7 +150,7 @@ void input_file() {
 	cout << "start to read file\n";
 	ifstream file(input_filename);
 	if (!file.is_open()) {
-		cout << "µLªk¥´¶}ÀÉ®×" << endl;
+		cout << "ç„¡æ³•æ‰“é–‹æª”æ¡ˆ" << endl;
 		return;
 	}
 	string line;
@@ -322,7 +322,7 @@ void input_file() {
 					size_t pos = tokens[1].find('/');
 
 					if (pos != string::npos) {
-						string before = tokens[1].substr(0, pos); // ´£¨ú¤À³Î¦r¤¸¤§«eªº³¡¤À
+						string before = tokens[1].substr(0, pos); // æå–åˆ†å‰²å­—å…ƒä¹‹å‰çš„éƒ¨åˆ†
 						string after = tokens[1].substr(pos + 1);
 						for (auto& v : FF) {
 							if (v.get_inst_name() == before) {
@@ -459,7 +459,7 @@ void show_cluster(vector<Cluster*> clusters) {
 
 	ofstream outFile("show_clusters_after_EMS.txt");
 	if (!outFile.is_open()) {
-		std::cerr << "µLªk¥´¶}ÀÉ®×" << std::endl;
+		std::cerr << "ç„¡æ³•æ‰“é–‹æª”æ¡ˆ" << std::endl;
 		return;
 	}
 	outFile << "size of clusters = " << clusters.size() << endl;
@@ -485,7 +485,7 @@ void show_MBFF() {
 		std::cerr << "can't open the file" << std::endl;
 		return;
 	}
-
+	outFile<<"Size of MBFF is : "<<MBFF.size()<<endl;
 	for (auto v : MBFF) {
 		outFile << v.get_inst_name() << ":\n"
 			<< "\tlib: \t" << v.get_ff_name() << endl
@@ -503,12 +503,16 @@ void drawPlot() {
 	cout << "start to generate plot's dpx\n";
 	ofstream outFile("my_project.dpx");
 	if (!outFile.is_open()) {
-		std::cerr << "µLªk¥´¶}ÀÉ®×" << std::endl;
+		std::cerr << "ç„¡æ³•æ‰“é–‹æª”æ¡ˆ" << std::endl;
 		return;
 	}
 	for (auto v : MBFF) {
-		outFile << "COLOR green" << endl;
-		outFile << "SRF " << v.getPos().access_Values().at(0) << " " << v.getPos().access_Values().at(1) << " " << v.getPos().access_Values().at(0) + v.get_ff_width() << " " << v.getPos().access_Values().at(1) + v.get_ff_height() << endl;
+	outFile << "COLOR green" << endl;
+	outFile << "SRF " << v.getPos().access_Values().at(0) << " -" << v.getPos().access_Values().at(1) << " " << v.getPos().access_Values().at(0) + v.get_ff_width() << " -" << v.getPos().access_Values().at(1) + v.get_ff_height() << endl;
+	}
+	for (auto v : Gate) {
+		outFile << "COLOR black" << endl;
+		outFile << "SRF " << v.getPos().access_Values().at(0) << " -" << v.getPos().access_Values().at(1) << " " << v.getPos().access_Values().at(0) + v.get_ff_width() << " -" << v.getPos().access_Values().at(1) + v.get_ff_height() << endl;
 	}
 }
 
