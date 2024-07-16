@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include<cmath>
 #include<cstdlib>
 #include<vector>
@@ -8,7 +8,9 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "legalize.h"
-
+#include"Cell.h"
+#include"Point.h"
+#include"Partition.h"
 
 using namespace std;
 
@@ -112,7 +114,7 @@ void find_horizontal_overlaps(vector<Cell>& MBFF, unordered_map<int, unordered_s
 				int active_end_x = MBFF[active_idx].getPos().access_Values().at(0) + MBFF[active_idx].get_ff_width();
 				int event_end_x = MBFF[event.cluster_idx].getPos().access_Values().at(0) + MBFF[event.cluster_idx].get_ff_width();
 				if (MBFF[event.cluster_idx].getPos().access_Values().at(0) < active_end_x && MBFF[active_idx].getPos().access_Values().at(0) < event_end_x) {
-					cout << "C" << MBFF[active_idx].get_clusterNum() << "&C" << MBFF[event.cluster_idx].get_clusterNum() << " overlap\n";
+					//cout << "C" << MBFF[active_idx].get_clusterNum() << "&C" << MBFF[event.cluster_idx].get_clusterNum() << " overlap\n";
 					overlap_graph[MBFF[active_idx].get_clusterNum()].insert(MBFF[event.cluster_idx].get_clusterNum());
 					overlap_graph[MBFF[event.cluster_idx].get_clusterNum()].insert(MBFF[active_idx].get_clusterNum());
 				}
@@ -158,10 +160,11 @@ void creat_overlap_edge(unordered_map<int, unordered_set<int>>& graph, int direc
 //找vertical和horizontal overlap graph 共同的edge	
 //vector<cluster, cluster>overlap_edge;//overlap_edges是<int,int>不方便後面移動的部分
 void merge_horizontal_vertical_overlap(set<pair<int, int>>& edges1, set<pair<int, int>>& edges2, set<pair<int, int>>& overlap_edges, vector<pair<Cell, Cell>>& need_move_overlap_edges, set<int>& overlap_cluster, vector<Cell>& MBFF) {
+	cout << "start merge_horizontal_vertical_overlap\n";
 	for (const auto& edge1 : edges1) {
 		for (const auto& edge2 : edges2) {
 			if ((edge1.first == edge2.first && edge1.second == edge2.second) || (edge1.first == edge2.second && edge1.second == edge2.first)) {
-				cout << "overlap edge: " << edge1.first << ", " << edge1.second << "\n";//檢查overlap graph
+				//cout << "overlap edge: " << edge1.first << ", " << edge1.second << "\n";//檢查overlap graph
 				need_move_overlap_edges.push_back({ MBFF[edge1.first], MBFF[edge1.second] });  // 插入 pair<cell, cell>
 				overlap_edges.insert(edge1);
 				break;
@@ -172,7 +175,7 @@ void merge_horizontal_vertical_overlap(set<pair<int, int>>& edges1, set<pair<int
 		overlap_cluster.insert(edge1.first);
 		overlap_cluster.insert(edge1.second);
 	}
-	cout << "finish merge_overlaps\n";
+	//cout << "finish merge_overlaps\n";
 }
 
 bool check_overlap(Cell& cluster1, Cell& cluster2) {
@@ -233,7 +236,7 @@ void move_cluster(Cell& current_cluster, const vector<Cell>& overlap_clusters, v
 		int n_p_left = nearest_cluster.get_p_left();
 		int n_p_up = nearest_cluster.get_p_up();
 		int n_p_down = nearest_cluster.get_p_down();
-		cout << "current cluster C" << current_cluster.get_clusterNum() << " nearest cluster:" << "C" << nearest_cluster.get_clusterNum() << "\n";
+		//cout << "current cluster C" << current_cluster.get_clusterNum() << " nearest cluster:" << "C" << nearest_cluster.get_clusterNum() << "\n";
 		if (!samewidth(nearest_cluster, current_cluster) && fabs(nearest_cluster.getPos().access_Values().at(0) + nearest_cluster.get_ff_width() - current_cluster.getPos().access_Values().at(0) - current_cluster.get_ff_width()) < fabs(nearest_cluster.getPos().access_Values().at(1) + nearest_cluster.get_ff_height() - current_cluster.getPos().access_Values().at(1) - current_cluster.get_ff_height()) && (n_p_left < max_penalty || n_p_right < max_penalty)) { // 确定水平或垂直移动
 			cout << "horizontal move\n";
 			if (nearest_cluster.getPos().access_Values().at(0) + nearest_cluster.get_ff_width() < current_cluster.getPos().access_Values().at(0) + current_cluster.get_ff_width() && n_p_right < max_penalty) { // 向右移动
@@ -311,13 +314,14 @@ void move_cluster(Cell& current_cluster, const vector<Cell>& overlap_clusters, v
 }
 bool slack_bigger(Cell& cluster1, Cell& cluster2) {
 	float slack1 = 0.0;
+	//cout <<"C"<<cluster1.get_clusterNum() << " slack1:have " << cluster1.get_children().size() << " children";
 	for (int i = 0; i < cluster1.get_children().size(); i++) {
 		Cell* child = cluster1.get_children()[i];
 		for (auto& pin : child->get_pin()) {
 			slack1 += pin.get_timing_slack();
 		}
 	}
-
+	slack1 = slack1 / cluster1.get_children().size();
 	float slack2 = 0.0;
 	for (int i = 0; i < cluster2.get_children().size(); i++) {
 		Cell* child = cluster2.get_children()[i];
@@ -325,8 +329,9 @@ bool slack_bigger(Cell& cluster1, Cell& cluster2) {
 			slack2 += pin.get_timing_slack();
 		}
 	}
+	slack2 = slack2 / cluster1.get_children().size();
 
-	return slack1 > slack2;
+	return slack1 < slack2;
 }
 
 int shift_time = 0;//確認移動幾次而已
@@ -381,7 +386,11 @@ queue<Cell> get_overlap_clusters(vector<Cell>& MBFF, vector<pair<Cell, Cell>>& n
 	}
 	cout << "}\n";
 	for (int cluster_idx : overlap_cluster) {
-		overlap_clusters.push_back(MBFF[cluster_idx]);
+		bool cannot_move = MBFF[cluster_idx].get_p_left() >= max_penalty && MBFF[cluster_idx].get_p_right() >= max_penalty && MBFF[cluster_idx].get_p_up() >= max_penalty && MBFF[cluster_idx].get_p_down() >= max_penalty;
+		if (cannot_move == false) {
+			overlap_clusters.push_back(MBFF[cluster_idx]);
+		}
+		else cout << "\n///////C" << MBFF[cluster_idx].get_clusterNum() << "can not move////////////\n";
 	}
 	auto poriority_bigger = [](Cell& cluster1, Cell& cluster2) {//先比平均的slack再比bit
 		if (slack_bigger(cluster1, cluster2)) {
@@ -393,12 +402,14 @@ queue<Cell> get_overlap_clusters(vector<Cell>& MBFF, vector<pair<Cell, Cell>>& n
 		else {
 			return cluster1.get_bit() > cluster2.get_bit();
 		}
-		};
+	
+		//return cluster1.get_bit() > cluster2.get_bit();
+	};
 	sort(overlap_clusters.begin(), overlap_clusters.end(), poriority_bigger);//依照poriority先去排我的overlap clusters
 	for (auto& cl : overlap_clusters) {//把cluster轉換成queue
 		overlap_queue.push(cl);
 	}
-	cout << "\nafter " << shift_time << " time shift:\n";
+	cout << "/////////////////////////////\n/////legal has " << shift_time << " time shift//\n/////////////////////////////\n";
 	shift_time++;
 	cout << "overlap clusters: ";
 	for (auto& cluster : overlap_clusters) {
@@ -412,7 +423,7 @@ void shift_until_legal(vector<Cell> overlap_clusters, queue<Cell>& overlap_queue
 	while (!overlap_queue.empty()) {
 		for (auto& cl : overlap_clusters) {
 			move_cluster(cl, overlap_clusters, MBFF);
-			cout << "move " << overlap_queue.front().get_clusterNum() << "\n";
+			//cout << "move " << overlap_queue.front().get_clusterNum() << "\n";
 			overlap_queue.pop();
 		}
 		cout << "finish!!!\n";
@@ -450,7 +461,7 @@ void legalize(vector<Cell>& MBFF, int bin_width, int bin_height, int die_x_min, 
 		cell.set_ypos(y);*/
 		cout << "\n";
 	}
-	cout << "finish to the site\n";
+	//cout << "finish to the site\n";
 
 	vector<pair<Cell, Cell>> need_move_overlap_edges;
 	vector<Cell> overlap_clusters;
@@ -458,4 +469,42 @@ void legalize(vector<Cell>& MBFF, int bin_width, int bin_height, int die_x_min, 
 	overlap_queue = get_overlap_clusters(MBFF, need_move_overlap_edges, overlap_clusters);
 
 	shift_until_legal(overlap_clusters, overlap_queue, MBFF, need_move_overlap_edges);
+	/////////匈牙利演算法input/////////
+	vector<Pin*> D_MBFF;
+	vector<Pin*> Q_MBFF;
+	vector<Pin*> D_children;
+	vector<Pin*> Q_children;
+	
+	for (int i = 0;i< MBFF.size();i++) {
+		//cout << "\n匈牙利演算法" << "\n";
+		int num_of_pin=MBFF[i].get_pin_count();
+		vector<Pin> pins = MBFF[i].get_pin();
+		//cout << "pin size:" << num_of_pin << "\n";
+        /*for (Pin& pin : pins) {
+			cout << "pin\n";
+			int relatively_x=pin.get_pin_pos().access_Values().at(0);
+			int relatively_y=pin.get_pin_pos().access_Values().at(1);
+			int x=cluster.get_xpos();
+			int y=cluster.get_ypos();
+			cout << "\nrelatively_x: "<< relatively_x << " ,relatively_y: " << relatively_y << "\n";
+            if (pin.get_pin_name().substr(0, 1) == "D") {				
+                D_MBFF.push_back(&pin);
+            }else if (pin.get_pin_name().substr(0, 1) == "Q") {
+				Q_MBFF.push_back(&pin);
+			}
+        }
+		for (Cell* children :cluster.get_children()) {			
+			vector<Pin>& pins_children = children->get_pin();			
+			for (Pin& pin : pins_children) {
+				int relatively_x = pin.get_pin_xpos();
+				int relatively_y = pin.get_pin_ypos();
+				if (pin.get_pin_name().substr(0, 1) == "D") {
+					D_children.push_back(&pin);
+				}
+				else if (pin.get_pin_name().substr(0, 1) == "Q") {
+					Q_children.push_back(&pin);
+				}
+			}
+		}*/
+	}
 }
