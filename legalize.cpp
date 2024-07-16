@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include<cmath>
 #include<cstdlib>
 #include<vector>
@@ -127,27 +127,32 @@ void find_horizontal_overlaps(vector<Cell>& MBFF, unordered_map<int, unordered_s
 
 set<pair<int, int>> vertical_overlaps_edges;
 set<pair<int, int>> horizontal_overlaps_edges;
-void creat_overlap_edge(unordered_map<int, unordered_set<int>>& graph, int direction) {//建立vertical(1)和horizontal(2) overlap graph
+void creat_overlap_edge(vector < Cell >& MBFF, unordered_map<int, unordered_set<int>>& graph, int direction) {//建立vertical(1)和horizontal(2) overlap graph
 	for (const auto& entry : graph) {
 		int node = entry.first;
 		const unordered_set<int>& neighbors = entry.second;
 		if (direction == 1) {
 			for (int neighbor : neighbors) {
 				if (node < neighbor) {//避免 {a,b}& {b,a}
-					vertical_overlaps_edges.insert({ node, neighbor });
+					//vertical_overlaps_edges.insert({ node, neighbor });
+					MBFF[node].get_vertical_overlap_index().emplace_back(neighbor);
 				}
 				else {
-					vertical_overlaps_edges.insert({ neighbor, node });
+					//vertical_overlaps_edges.insert({ neighbor, node });
+					MBFF[neighbor].get_vertical_overlap_index().emplace_back(node);
 				}
 			}
 		}
 		else if (direction == 2) {
 			for (int neighbor : neighbors) {
 				if (node < neighbor) {
-					horizontal_overlaps_edges.insert({ node, neighbor });
+					//horizontal_overlaps_edges.insert({ node, neighbor });
+					MBFF[node].get_horizontal_overlap_index().emplace_back(neighbor);
+					cout << "Size of MBFF[node].horizontal_size = " << MBFF[node].get_horizontal_overlap_index().size() << endl;
 				}
 				else {
-					horizontal_overlaps_edges.insert({ neighbor, node });
+					//horizontal_overlaps_edges.insert({ neighbor, node });
+					MBFF[neighbor].get_horizontal_overlap_index().emplace_back(node);
 				}
 			}
 		}
@@ -159,7 +164,7 @@ void creat_overlap_edge(unordered_map<int, unordered_set<int>>& graph, int direc
 //vector<cluster, cluster>overlap_edge;//overlap_edges是<int,int>不方便後面移動的部分
 void merge_horizontal_vertical_overlap(set<pair<int, int>>& edges1, set<pair<int, int>>& edges2, set<pair<int, int>>& overlap_edges, vector<pair<Cell, Cell>>& need_move_overlap_edges, set<int>& overlap_cluster, vector<Cell>& MBFF) {
 	cout << "start merge_horizontal_vertical_overlap\n";
-	for (const auto& edge1 : edges1) {
+	/*for (const auto& edge1 : edges1) {
 		for (const auto& edge2 : edges2) {
 			if ((edge1.first == edge2.first && edge1.second == edge2.second) || (edge1.first == edge2.second && edge1.second == edge2.first)) {
 				//cout << "overlap edge: " << edge1.first << ", " << edge1.second << "\n";//檢查overlap graph
@@ -170,9 +175,27 @@ void merge_horizontal_vertical_overlap(set<pair<int, int>>& edges1, set<pair<int
 				break;
 			}
 		}
-		
+
+	}*/
+	for (int i = 0; i < MBFF.size(); ++i) {
+		cout << "size = : " << MBFF[i].get_horizontal_overlap_index().size();
+		for (auto u : MBFF[i].get_vertical_overlap_index()) {
+			for (auto v : MBFF[u].get_horizontal_overlap_index()) {
+				if (v == i) {
+					need_move_overlap_edges.push_back({ MBFF[u], MBFF[v] });  // 插入 pair<cell, cell>
+					overlap_edges.insert({u,v});
+					overlap_cluster.insert(u);
+					overlap_cluster.insert(v);
+					break;
+				}
+			}
+			
+		}
 	}
 	
+	
+	
+
 	//cout << "finish merge_overlaps\n";
 }
 
@@ -345,8 +368,8 @@ queue<Cell> get_overlap_clusters(vector<Cell>& MBFF, vector<pair<Cell, Cell>>& n
 
 	cout << "finish find_horizontal_overlaps、find_vertical_overlaps\n";
 
-	creat_overlap_edge(overlap_vertical_graph, 1);//1:vettical,2:horizontal
-	creat_overlap_edge(overlap_horizontal_graph, 2);
+	creat_overlap_edge(MBFF, overlap_vertical_graph, 1);//1:vettical,2:horizontal
+	creat_overlap_edge(MBFF, overlap_horizontal_graph, 2);
 
 	cout << "finish overlap_edge\n";
 
@@ -400,9 +423,9 @@ queue<Cell> get_overlap_clusters(vector<Cell>& MBFF, vector<pair<Cell, Cell>>& n
 		else {
 			return cluster1.get_bit() > cluster2.get_bit();
 		}
-	
+
 		//return cluster1.get_bit() > cluster2.get_bit();
-	};
+		};
 	sort(overlap_clusters.begin(), overlap_clusters.end(), poriority_bigger);//依照poriority先去排我的overlap clusters
 	for (auto& cl : overlap_clusters) {//把cluster轉換成queue
 		overlap_queue.push(cl);

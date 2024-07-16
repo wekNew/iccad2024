@@ -31,6 +31,8 @@ private:
 	int p_down;//penalty
 
 	vector<Cell*> children;
+	vector<int> vertical_overlap_index;
+	vector<int> horizontal_overlap_index;
 
 public:
 	Cell(int bit, string ff_name, int ff_width, int ff_height, int pin_count) {
@@ -153,6 +155,12 @@ public:
 	}
 	vector<Cell*>& get_children() {
 		return children;
+	}
+	vector<int>& get_vertical_overlap_index() {
+		return vertical_overlap_index;
+	}
+	vector<int>& get_horizontal_overlap_index() {
+		return horizontal_overlap_index;
 	}
 	int get_p_right() {//penalty
 		return p_right;
