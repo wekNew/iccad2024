@@ -31,6 +31,7 @@
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="partition.cpp" />
     <ClCompile Include="table.cpp" />
+    <ClCompile Include="tetris.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cluster.h" />
@@ -44,6 +45,7 @@
     <ClInclude Include="cell.h" />
     <ClInclude Include="netlist.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="tetris.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

@@ -4,6 +4,7 @@
 #include<vector>
 #include<queue>
 #include <set>
+#include <random>
 #include <algorithm>
 #include <unordered_map>
 #include <unordered_set>
@@ -127,33 +128,40 @@ void find_horizontal_overlaps(vector<Cell>& MBFF, unordered_map<int, unordered_s
 
 set<pair<int, int>> vertical_overlaps_edges;
 set<pair<int, int>> horizontal_overlaps_edges;
-void creat_overlap_edge(vector < Cell >& MBFF, unordered_map<int, unordered_set<int>>& graph, int direction) {//建立vertical(1)和horizontal(2) overlap graph
+void creat_overlap_edge(vector <Cell>& MBFF, unordered_map<int, unordered_set<int>>& graph, int direction) {//建立vertical(1)和horizontal(2) overlap graph
 	for (const auto& entry : graph) {
 		int node = entry.first;
 		const unordered_set<int>& neighbors = entry.second;
 		if (direction == 1) {
 			for (int neighbor : neighbors) {
+				//MBFF[node].get_vertical_overlap_index().emplace_back(neighbor);
+				MBFF[node].get_vertical_overlap_index().insert(neighbor);
+				MBFF[neighbor].get_vertical_overlap_index().insert(node);
+				/*
 				if (node < neighbor) {//避免 {a,b}& {b,a}
 					//vertical_overlaps_edges.insert({ node, neighbor });
-					MBFF[node].get_vertical_overlap_index().emplace_back(neighbor);
+
 				}
 				else {
 					//vertical_overlaps_edges.insert({ neighbor, node });
-					MBFF[neighbor].get_vertical_overlap_index().emplace_back(node);
-				}
+
+				}*/
 			}
 		}
 		else if (direction == 2) {
 			for (int neighbor : neighbors) {
+				//MBFF[node].get_horizontal_overlap_index().emplace_back(neighbor);
+				MBFF[node].get_horizontal_overlap_index().insert(neighbor);
+				MBFF[neighbor].get_horizontal_overlap_index().insert(node);
+				/*
 				if (node < neighbor) {
 					//horizontal_overlaps_edges.insert({ node, neighbor });
-					MBFF[node].get_horizontal_overlap_index().emplace_back(neighbor);
-					cout << "Size of MBFF[node].horizontal_size = " << MBFF[node].get_horizontal_overlap_index().size() << endl;
+
 				}
 				else {
 					//horizontal_overlaps_edges.insert({ neighbor, node });
-					MBFF[neighbor].get_horizontal_overlap_index().emplace_back(node);
-				}
+
+				}*/
 			}
 		}
 
@@ -178,23 +186,22 @@ void merge_horizontal_vertical_overlap(set<pair<int, int>>& edges1, set<pair<int
 
 	}*/
 	for (int i = 0; i < MBFF.size(); ++i) {
-		cout << "size = : " << MBFF[i].get_horizontal_overlap_index().size();
 		for (auto u : MBFF[i].get_vertical_overlap_index()) {
+			//cout << u << endl;
 			for (auto v : MBFF[u].get_horizontal_overlap_index()) {
 				if (v == i) {
+					//cout << v<<endl;
+					cout << "overlap edge: " << u << ", " << v << "\n";//檢查overlap graph
 					need_move_overlap_edges.push_back({ MBFF[u], MBFF[v] });  // 插入 pair<cell, cell>
-					overlap_edges.insert({u,v});
+					overlap_edges.insert({ u,v });
 					overlap_cluster.insert(u);
 					overlap_cluster.insert(v);
 					break;
 				}
 			}
-			
+
 		}
 	}
-	
-	
-	
 
 	//cout << "finish merge_overlaps\n";
 }
@@ -286,18 +293,18 @@ void move_cluster(Cell& current_cluster, const vector<Cell>& overlap_clusters, v
 			}
 		}
 		else { // 垂直移动		
-			if (nearest_cluster.getPos().access_Values().at(1) > current_cluster.getPos().access_Values().at(1)) { // 向上移动
+			if (nearest_cluster.getPos().access_Values().at(1) >= current_cluster.getPos().access_Values().at(1) && current_cluster.get_p_up() < max_penalty) { // 向上移动
 				cout << "C" << current_cluster.get_clusterNum() << " move up\n";
 				y = current_cluster.getPos().access_Values().at(1) + unit_height;
 				p_up++;
 				if (current_cluster.getPos().access_Values().at(1) > Die_max_y || current_cluster.getPos().access_Values().at(1) + current_cluster.get_ff_height() > Die_max_y) {
 					y = current_cluster.getPos().access_Values().at(1) - unit_height;
-					cout << "C" << current_cluster.get_clusterNum() << " 到最下邊界\n";
+					cout << "C" << current_cluster.get_clusterNum() << " 到最上邊界\n";
 				}
 				if (p_up >= max_penalty)
 					cout << "C" << current_cluster.get_clusterNum() << " can not move up!!!\n";//penalty太大不能再往上
 			}
-			else if (nearest_cluster.getPos().access_Values().at(1) < current_cluster.getPos().access_Values().at(1)) { // 向下移动
+			else if (nearest_cluster.getPos().access_Values().at(1) < current_cluster.getPos().access_Values().at(1) && current_cluster.get_p_down() < max_penalty) { // 向下移动
 				cout << "C" << current_cluster.get_clusterNum() << " move down\n";
 				y = current_cluster.getPos().access_Values().at(1) - unit_height;
 				p_down++;
@@ -312,6 +319,16 @@ void move_cluster(Cell& current_cluster, const vector<Cell>& overlap_clusters, v
 				cout << "C" << current_cluster.get_clusterNum() << " completely overlap\n";
 				x = current_cluster.getPos().access_Values().at(0) + unit_width * completely_overlap_move;//第一個留在原地其他往旁邊移
 				completely_overlap_move++;
+			}
+			else if (current_cluster.get_p_up() > max_penalty && current_cluster.get_p_down() > max_penalty) {
+				int n = MBFF.size();
+				random_device rd; // 获取随机数种子
+				mt19937 gen(rd()); // 使用梅森旋转算法生成随机数
+				uniform_int_distribution<> dis(0, n); // 生成 0 到 n 的均匀分布随机数
+
+				int random_number = dis(gen); // 生成随机数
+				std::cout << "随机数: " << random_number << std::endl;
+				x = current_cluster.getPos().access_Values().at(0) + unit_width * random_number;
 			}
 		}
 	}

@@ -80,15 +80,19 @@ void meanShift(std::vector<Cell>& cells, float max_bandwidth, int M, int K, floa
                 cout << count << " distance : " << c.distance << ", variance : " << c.variance<<endl;
             }*/
             // 计算新位置
+            cout << "\ti = " << i << endl;
             for (const auto& neighbor : neighbors) {
                 
                 float gaussian = std::exp(-(neighbor.distance * neighbor.distance) / (2 * neighbor.variance * neighbor.variance));
-                
+                //cout << "\tneighbor.distance = " << neighbor.distance << " , guassian = " << gaussian << endl;
                 newPosition += neighbor.point * gaussian;
                 totalWeight += gaussian;
             }
             newPosition /= totalWeight;
             if (iterations == 0) {
+                
+                //cout << "\tnewPosition = (" << newPosition.access_Values().at(0) << "," << newPosition.access_Values().at(1) 
+                    //<< ") original Position = (" << pointToShift.access_Values().at(0) << "," << pointToShift.access_Values().at(1) << ")\n";
                 newPosition = (newPosition + pointToShift * 9) / 10;
             }
             if (cells[i].get_inst_name() == "C102688") {

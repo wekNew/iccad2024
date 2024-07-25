@@ -24,7 +24,7 @@ C3:
 	x_pox	40	y_pos	25
 	height:	10	width	5
 	pincout:	2
-		pin:	D:(0,8)	TimingSlack=10
+		pin:	D:(0,8)	TimingSlack=-10
 		pin:	Q:(5,8)	TimingSlack=0
 	QpinDelay:	1
 	gate_power:	10

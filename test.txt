@@ -47,7 +47,7 @@ QpinDelay FF1 1
 QpinDelay FF2 2
 TimingSlack C1 D 10
 TimingSlack C2 D 10
-TimingSlack C3 D 10
+TimingSlack C3 D -10
 TimingSlack C4 D 4
 TimingSlack C5 D 0
 TimingSlack C6 D0 0

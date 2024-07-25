@@ -25,6 +25,9 @@
     <Filter Include="algorithm\legalize">
       <UniqueIdentifier>{fe0f0d48-96d6-486c-9567-80340acc93e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="algorithm\tetris">
+      <UniqueIdentifier>{d4ca66de-c4d4-410b-b080-785333a8472d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -63,6 +66,9 @@
     <ClCompile Include="legalize.cpp">
       <Filter>algorithm\legalize</Filter>
     </ClCompile>
+    <ClCompile Include="tetris.cpp">
+      <Filter>algorithm\tetris</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pin.h">
@@ -97,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="legalize.h">
       <Filter>algorithm\legalize</Filter>
+    </ClInclude>
+    <ClInclude Include="tetris.h">
+      <Filter>algorithm\tetris</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
