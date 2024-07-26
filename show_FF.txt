@@ -130,36 +130,3 @@ C12:
 		pin:	clk:(10,40)	TimingSlack=0
 	QpinDelay:	1
 	gate_power:	10
-C8'1:
-	model:	FF3
-	bit:	1
-	x_pox	300	y_pos	300
-	height:	200	width	40
-	pincout:	3
-		pin:	D:(20,0)	TimingSlack=0
-		pin:	Q:(55,24)	TimingSlack=0
-		pin:	clk:(16,25)	TimingSlack=0
-	QpinDelay:	2
-	gate_power:	8
-C9'1:
-	model:	FF3
-	bit:	1
-	x_pox	360	y_pos	400
-	height:	200	width	40
-	pincout:	3
-		pin:	D:(20,0)	TimingSlack=0
-		pin:	Q:(55,24)	TimingSlack=0
-		pin:	clk:(16,25)	TimingSlack=0
-	QpinDelay:	2
-	gate_power:	8
-C10'1:
-	model:	FF3
-	bit:	1
-	x_pox	700	y_pos	700
-	height:	200	width	40
-	pincout:	3
-		pin:	D:(20,0)	TimingSlack=0
-		pin:	Q:(55,24)	TimingSlack=0
-		pin:	clk:(16,25)	TimingSlack=0
-	QpinDelay:	2
-	gate_power:	8

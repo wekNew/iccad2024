@@ -1,35 +1,45 @@
 C1:
-	lib: 	FF1
-	pos: 	15 20
-	size:	5 10
+	lib: 	FF3
+	pos: 	0 0
+	size:	40 200
 	from:	C1 
 C2:
-	lib: 	FF1
-	pos: 	11.0817 2.74082
-	size:	5 10
+	lib: 	FF3
+	pos: 	150 0
+	size:	40 200
 	from:	C2 
 C3:
-	lib: 	FF1
-	pos: 	40 25
-	size:	5 10
+	lib: 	FF3
+	pos: 	300 0
+	size:	40 200
 	from:	C3 
-C6'1:
-	lib: 	FF1
-	pos: 	9.88808 1.83188
-	size:	5 10
-	from:	C6'1 
-C13:
-	lib: 	FF2
-	pos: 	10.3953 2.32627
-	size:	8 10
-	from:	C6'0 C7'0 
-C14:
-	lib: 	FF2
-	pos: 	10.402 2.32184
-	size:	8 10
-	from:	C4 C7'1 
 C5:
-	lib: 	FF1
-	pos: 	14.9001 19.7078
-	size:	5 10
+	lib: 	FF3
+	pos: 	200 200
+	size:	40 200
 	from:	C5 
+C4:
+	lib: 	FF3
+	pos: 	500 0
+	size:	40 200
+	from:	C4 
+C6:
+	lib: 	FF3
+	pos: 	500 100
+	size:	40 200
+	from:	C6 
+C7:
+	lib: 	FF3
+	pos: 	800 200
+	size:	40 200
+	from:	C7 
+C11:
+	lib: 	FF3
+	pos: 	800 700
+	size:	40 200
+	from:	C11 
+C12:
+	lib: 	FF3
+	pos: 	600 900
+	size:	40 200
+	from:	C12 

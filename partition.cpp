@@ -212,7 +212,7 @@ int findFarthestPtoP(vector<Cell*>& cells, Point& p) {
 }
 
 double distance(Point& a, Point& b) {
-	//return sqrt(pow(a.access_Values().at(0) - b.access_Values().at(0), 2) + pow(a.access_Values().at(1) - b.access_Values().at(1), 2));
+	return sqrt(pow(a.access_Values().at(0) - b.access_Values().at(0), 2) + pow(a.access_Values().at(1) - b.access_Values().at(1), 2));
 }
 
 int findFarthestPointFromCentroid(vector<Cell*>& cells, vector<int>& clusterAssignment, int cluster, Point& centroid) {

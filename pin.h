@@ -5,10 +5,13 @@
 #include<vector>
 using namespace std;
 //#include "cell.h"
-#include "netlist.h"
+//#include "netlist.h"
+
+
 #ifndef	_PIN_H_
 #define _PIN_H_
 class Cell;
+class Net;
 class Pin {
 private:
 	string pin_name;
@@ -31,9 +34,12 @@ public:
 	void set_belong(Cell* temp) {
 		belong = temp;
 	}
+
+	
 	void set_clk_net(Net* temp) {
 		clk_net = temp;
 	}
+	
 	////////get////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	string get_pin_name() {
 		return pin_name;
@@ -50,9 +56,11 @@ public:
 	Cell* get_belong() {
 		return belong;
 	}
+	
 	Net* get_clk_net() {
 		return clk_net;
 	}
+	
 };
 void show_pin();
 #endif 

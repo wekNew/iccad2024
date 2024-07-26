@@ -80,7 +80,7 @@ void meanShift(std::vector<Cell>& cells, float max_bandwidth, int M, int K, floa
                 cout << count << " distance : " << c.distance << ", variance : " << c.variance<<endl;
             }*/
             // 计算新位置
-            cout << "\ti = " << i << endl;
+            //cout << "\ti = " << i << endl;
             for (const auto& neighbor : neighbors) {
                 
                 float gaussian = std::exp(-(neighbor.distance * neighbor.distance) / (2 * neighbor.variance * neighbor.variance));

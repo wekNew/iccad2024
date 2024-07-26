@@ -110,6 +110,13 @@ int main() {
 		initialize();
 	STOP_TIMER(initialize, "initialize()", logfile)
 
+		for (int i = 0; i < same_clk_FF.size();++i) {
+			cout << "clk " << i << "\t:\n";
+			for (auto v : same_clk_FF.at(i)) {
+				cout << "\tname : " << v.get_inst_name() << "\tpos : (" << v.getPos().get_xpos() << "," << v.getPos().get_ypos() << endl;
+			}
+		}
+
 		show();
 	int max_cluster_size = 0;
 	START_TIMER(meanShift)
@@ -193,6 +200,12 @@ void initialize() {
 		}
 	}
 	
+	for (auto& v : Gate) {
+		for (auto& u : v.get_pin()) {
+			u.set_belong(&v);
+		}
+	}
+	
 	for (auto& v : netlist.get_contain_net()) {
 		vector<Cell> temp;
 		temp.clear();
@@ -202,7 +215,7 @@ void initialize() {
 				if (cellPtr != nullptr) {
 					temp.emplace_back(*cellPtr);
 				}
-				u->set_clk_net(&v);
+				
 			}
 		}
 		if (temp.size() != 0) {
@@ -602,8 +615,13 @@ void input_file() {
 							if (v.get_inst_name() == before) {
 								for (auto& u : v.get_pin()) {
 									if (u.get_pin_name() == after) {
-										//cout << "There\n";
+										
 										temp_net.set_pin(&u);
+										if (after == "clk") {
+											
+											u.set_clk_net(&temp_net);
+											//cout << "pin form :" << u->get_belong()->get_inst_name() << "set_clk_net to " << u->get_clk_net()->get_net_name() << endl;
+										}
 										break;
 									}
 								}

@@ -29,6 +29,7 @@ void InitialDebanking(vector<Cell>& FF, vector<Cell*>& best_st_table) {
 			// 複製和重設位置
 			Cell original_FF = FF[i];
 			Pin original_clk_pin = {"clk",0,0};
+			
 			for (auto& v : original_FF.get_pin()) {
 				if (v.get_pin_name() == "clk") {
 					original_clk_pin = v;
@@ -37,18 +38,21 @@ void InitialDebanking(vector<Cell>& FF, vector<Cell*>& best_st_table) {
 			
 			for (int j = 0; j < original_FF.get_bit(); ++j) {
 				Cell copy_cell = *best_st_table[0];
+				cout << "copy_cell's pin count : " << copy_cell.get_pin().size() << endl;
 				copy_cell.setPos(currentPos);
 				//cout << "currentPos=" << currentPos.access_Values().at(0) << "," << currentPos.access_Values().at(1) << endl;
 				copy_cell.set_inst(original_FF.get_inst_name() + "'" + to_string(j),currentPos.access_Values().at(0), currentPos.access_Values().at(1));
 				copy_cell.get_pin().at(0).set_timing_slack(original_FF.get_pin().at(j).get_timing_slack());
-				//copy_cell.get_pin().at(2).
+				
 				if (j == 0) {
 					FF[i] = copy_cell; // 更新當前 Cell
 				}
 				else {
 					original_clk_pin.get_clk_net()->set_pin(&(copy_cell.get_pin().at(2)));
-					newCells.emplace_back(copy_cell); // 添加到新向量
 					
+					newCells.emplace_back(copy_cell); // 添加到新向量
+					//newCells.reserve(newCells.size() + 1);
+					//newCells.push_back(copy_cell);
 				}
 			}
 		}
