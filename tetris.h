@@ -1,4 +1,4 @@
-#pragma once
+//#pragma once
 #ifndef TETRIS_H
 #define TETRIS_H
 #include <vector>
@@ -33,7 +33,7 @@ private:
 
 	vector<Interval> intersection(int current_row, int row_height) {
 		vector<Interval> final_interval;
-		/*vector<IntervalPoint> temp;
+		vector<IntervalPoint> temp;
 
 		for (int i = current_row; i < current_row + row_height - 1; ++i) {
 			if (i < row_interval.size()) {
@@ -69,7 +69,7 @@ private:
 				final_interval.emplace_back(current_interval);
 				record = false;
 			}
-		}*/
+		}
 		return final_interval;
 	}
 public:
@@ -110,6 +110,11 @@ public:
 	}
 
 };
+inline int IndexConvert(float pos, int window_start_pos, int unit) {
+	return ((pos - window_start_pos) / unit);
+}
+Window FindWindowForMBFF(Cell& MBFF, vector<vector<Window>> windows, int window_start_x, int window_start_y, int unit_x, int unit_y);
+Window CombiWindow(vector<vector<Window>> windows, int x_start_index, int y_start_index, int x_end_index, int y_end_index);
 
 
 

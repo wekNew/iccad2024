@@ -1,18 +1,47 @@
 FF1:
 	bit:	1
-	height:	10	width	5
-	pincout:	2
+	height:	100	width	120
+	pincout:	3
 		pin:	D:(0,8)
 		pin:	Q:(5,8)
+		pin:	clk:(10,40)
 	QpinDelay:	1
 	gate_power:	10
 FF2:
+	bit:	1
+	height:	100	width	100
+	pincout:	3
+		pin:	D:(80,50)
+		pin:	Q:(40,80)
+		pin:	clk:(50,10)
+	QpinDelay:	2
+	gate_power:	17
+FF3:
+	bit:	1
+	height:	200	width	40
+	pincout:	3
+		pin:	D:(20,0)
+		pin:	Q:(55,24)
+		pin:	clk:(16,25)
+	QpinDelay:	2
+	gate_power:	8
+FF4:
+	bit:	1
+	height:	100	width	80
+	pincout:	3
+		pin:	D:(50,85)
+		pin:	Q:(45,18)
+		pin:	clk:(0,50)
+	QpinDelay:	1
+	gate_power:	10
+FF5:
 	bit:	2
-	height:	10	width	8
-	pincout:	4
+	height:	200	width	60
+	pincout:	5
 		pin:	D0:(0,9)
 		pin:	D1:(0,6)
 		pin:	Q0:(8,9)
 		pin:	Q1:(8,6)
-	QpinDelay:	2
-	gate_power:	17
+		pin:	clk:(50,100)
+	QpinDelay:	3
+	gate_power:	5

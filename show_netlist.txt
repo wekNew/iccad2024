@@ -1,5 +1,1 @@
 NetList have:	4
-	N1:	INPUT0  C1/D  
-	N2:	INPUT1  C2/D  
-	N3:	C1/Q  OUTPUT0  
-	N4:	C2/Q  OUTPUT1  

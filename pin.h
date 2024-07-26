@@ -5,6 +5,7 @@
 #include<vector>
 using namespace std;
 //#include "cell.h"
+#include "netlist.h"
 #ifndef	_PIN_H_
 #define _PIN_H_
 class Cell;
@@ -14,6 +15,7 @@ private:
 	int x_pos, y_pos;
 	float timing_slack;
 	Cell *belong;
+	Net* clk_net;
 public:
 	Pin(string pin_name, int x_pos, int y_pos) {
 		this->pin_name = pin_name;
@@ -28,6 +30,9 @@ public:
 	
 	void set_belong(Cell* temp) {
 		belong = temp;
+	}
+	void set_clk_net(Net* temp) {
+		clk_net = temp;
 	}
 	////////get////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	string get_pin_name() {
@@ -45,7 +50,9 @@ public:
 	Cell* get_belong() {
 		return belong;
 	}
-
+	Net* get_clk_net() {
+		return clk_net;
+	}
 };
 void show_pin();
 #endif 

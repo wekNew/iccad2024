@@ -7,6 +7,7 @@
 using namespace std;
 #include"pin.h"
 #include "Point.h"
+#include "netlist.h"
 
 #ifndef	_CELL_H_
 #define _CELL_H_

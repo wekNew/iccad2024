@@ -9,50 +9,101 @@ Input INPUT1 0 5
 NumOutput 2
 Output OUTPUT0 50 25
 Output OUTPUT1 50 5
-FlipFlop 1 FF1 5 10 2
+FlipFlop 1 FF1 120 100 3
 Pin D 0 8
 Pin Q 5 8
-FlipFlop 2 FF2 8 10 4
+Pin clk 10 40
+FlipFlop 1 FF2 100 100 3
+Pin D 80 50
+Pin Q 40 80
+Pin clk 50 10
+FlipFlop 1 FF3 40 200 3
+Pin D 20 0
+Pin Q 55 24
+Pin clk 16 25
+FlipFlop 1 FF4 80 100 3
+Pin D 50 85
+Pin Q 45 18
+Pin clk 0 50
+FlipFlop 2 FF5 60  200 5
 Pin D0 0 9
 Pin D1 0 6
 Pin Q0 8 9
 Pin Q1 8 6
-NumInstances 7
-Inst C1 FF1 15 20
-Inst C2 FF1 15 0
-Inst C3 FF1 40 25
-Inst C4 FF1 5 10
-Inst C5 FF1 25 20
-Inst C6 FF2 10 5
-Inst C7 FF2 0 0
+Pin clk 50 100
+NumInstances 12
+Inst C1 FF1 0 0
+Inst C2 FF3 150 0
+Inst C3 FF2 300 0
+Inst C4 FF1 500 0
+Inst C5 FF2 200 200
+Inst C6 FF4 500 100
+Inst C7 FF4 800 200
+Inst C8 FF5 300 300
+Inst C9 FF5 360 400
+Inst C10 FF5 700 700
+Inst C11 FF3 800 700
+Inst C12 FF1 600 900
 NumNets 4
-Net N1 2
+Net N1 6
 Pin INPUT0
-Pin C1/D
-Net N2 2
+Pin C1/clk
+Pin C2/clk
+Pin C3/clk
+Pin C5/clk
+Pin C8/clk
+Net N2 6
 Pin INPUT1
 Pin C2/D
+Pin C4/clk
+Pin C6/clk
+Pin C7/clk
+Pin C9/clk
 Net N3 2
 Pin C1/Q
 Pin OUTPUT0
-Net N4 2
+Net N4 5
 Pin C2/Q
 Pin OUTPUT1 
-BinWidth 10
-BinHeight 10
+Pin C10/clk
+Pin C11/clk
+Pin C12/clk
+BinWidth 250
+BinHeight 200
 BinMaxUtil 79
-PlacementRows 0 0 2 10
+PlacementRows 0 0 20 100 500
+PlacementRows 0 100 20 100 500
+PlacementRows 0 200 20 100 500
+PlacementRows 0 300 20 100 500
+PlacementRows 0 400 20 100 500
+PlacementRows 0 500 20 100 500
+PlacementRows 0 600 20 100 500
+PlacementRows 0 700 20 100 500
+PlacementRows 0 800 20 100 500
+PlacementRows 0 900 20 100 500
 DisplacementDelay 0.01
 QpinDelay FF1 1
 QpinDelay FF2 2
+QpinDelay FF3 2
+QpinDelay FF4 1
+QpinDelay FF5 3
 TimingSlack C1 D 10
 TimingSlack C2 D 10
 TimingSlack C3 D -10
 TimingSlack C4 D 4
 TimingSlack C5 D 0
-TimingSlack C6 D0 0
-TimingSlack C6 D1 5
-TimingSlack C7 D0 10
-TimingSlack C7 D1 0
+TimingSlack C6 D 0
+TimingSlack C7 D 0
+TimingSlack C8 D0 10
+TimingSlack C8 D1 0
+TimingSlack C9 D0 10
+TimingSlack C9 D1 0
+TimingSlack C10 D0 10
+TimingSlack C10 D1 0
+TimingSlack C11 D 0
+TimingSlack C12 D 0
 GatePower FF1 10
 GatePower FF2 17
+GatePower FF3 8
+GatePower FF4 10
+GatePower FF5 5

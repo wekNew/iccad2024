@@ -79,8 +79,8 @@ int main() {
 	K = 10;
 	M = 4;
 	epsilon = 0.1;
-	window_width = 100;
-	window_height = 20;
+	window_width = 10;
+	window_height = 5;
 
 
 
@@ -94,10 +94,6 @@ int main() {
 		input_file();
 	STOP_TIMER(input_file, "input_file()", logfile)
 
-		START_TIMER(initialize)
-		initialize();
-	STOP_TIMER(initialize, "initialize()", logfile)
-
 		
 
 
@@ -108,10 +104,16 @@ int main() {
 		START_TIMER(InitialDebanking)
 		InitialDebanking(FF, best_st_table);
 	STOP_TIMER(InitialDebanking, "InitialDebanking()", logfile)
+		cout << "end of initilDebanding\n";
+
+	START_TIMER(initialize)
+		initialize();
+	STOP_TIMER(initialize, "initialize()", logfile)
 
 		show();
 	int max_cluster_size = 0;
 	START_TIMER(meanShift)
+		cout << "start to meanshift\n";
 		for (auto& v : same_clk_FF) {
 			meanShift(v, max_bandwidth, M, K, epsilon, CLUSTERS);
 		}
@@ -149,6 +151,17 @@ int main() {
 
 	show_MBFF();
 
+	for (auto& v : MBFF) {
+		if (v.get_children().size() > 1) {
+
+			Window current_window=FindWindowForMBFF(v, windows, row_start_y, row_start_x, row_width * window_width, row_height * window_height);
+			cout << "multi-window : " << current_window.get_xpos() << "," << current_window.get_ypos() << " )\n";
+			//tetris(current_window,v);
+		}
+		
+	}
+
+
 	START_TIMER(legal)
 		for (int i = 0; i < MBFF.size(); i++) {
 			MBFF[i].set_clusterNum(i);
@@ -184,9 +197,12 @@ void initialize() {
 		vector<Cell> temp;
 		temp.clear();
 		for (auto& u : v.get_connect_pin()) {
-			
 			if (u->get_pin_name() == "clk") {
-				temp.emplace_back(u->get_belong());
+				Cell* cellPtr = u->get_belong();
+				if (cellPtr != nullptr) {
+					temp.emplace_back(*cellPtr);
+				}
+				u->set_clk_net(&v);
 			}
 		}
 		if (temp.size() != 0) {
@@ -196,31 +212,35 @@ void initialize() {
 
 	
 	cout << "start to bulid windows\n";
-	for (int Y = row_start_y; Y < die.y_max; Y += row_height * window_height) {
-		vector<Window> row_window;
-		int y_end = Y + row_height * window_height;
-		if (y_end > die.y_max) {
-			y_end = die.y_max;
+	for (int X = row_start_x; X < die.x_max; X += row_width * window_width) {
+		vector<Window> row_window; 
+		int x_end = X + row_width * window_width;
+		if (x_end >= die.x_max) {
+			x_end = die.x_max;
 		}
-		for (int X = row_start_x; X < die.x_max; X += row_width * window_width) {
+		for (int Y = row_start_y; Y < die.y_max; Y += row_height * window_height) {
 			Window new_window;
-			int x_end = X + row_width * window_width;
-			if ( x_end >= die.x_max) {
-				x_end = die.x_max;
+			int y_end = Y + row_height * window_height;
+			if (y_end > die.y_max) {
+				y_end = die.y_max;
 			}
-			new_window.set_window_size(X,Y,x_end-X,y_end-Y);
+			new_window.set_window_size(X, Y, x_end - X, y_end - Y);
 			row_window.emplace_back(new_window);
+			
 		}
 		windows.emplace_back(row_window);
 	}
 	
+	
 	for (auto& v : FF) {
+		
 		int cell_x_min = v.getPos().access_Values().at(0);
 		int cell_x_max = v.getPos().access_Values().at(0)+v.get_ff_width();
 		int cell_y_min = v.getPos().access_Values().at(1);
 		int cell_y_max = v.getPos().access_Values().at(1) + v.get_ff_height();
-		int x_index = (cell_x_min - row_start_x) / row_width;
-		int y_index = (cell_x_min - row_start_y) / row_height;
+		int x_index = (cell_x_min - row_start_x) / (row_width*window_width);
+		int y_index = (cell_x_min - row_start_y) / (row_height*window_height);
+		cout << "x_index : " << x_index << "\ty_index : " << y_index << endl;
 		Window current_window = windows.at(x_index).at(y_index);
 		bool right_over = false, up_over = false;
 		if (cell_x_max>current_window.get_xpos()+current_window.get_width()) {
@@ -278,7 +298,7 @@ void initialize() {
 			current_window.access_EdgeCell().emplace_back(&v);
 		}
 	}
-	
+	cout << "end of initialize\n";
 	
 }
 void show() {
@@ -408,6 +428,7 @@ void input_file() {
 	}
 	string line;
 	int count = 0;
+	int min_x_start=10000000, min_y_start=100000000;
 	while (getline(file, line)) {
 		istringstream linestream(line);
 
@@ -624,8 +645,14 @@ void input_file() {
 		else if (tokens[0] == "PlacementRows") {
 			OnsiteLocation temp = { stoi(tokens[1]),stoi(tokens[2]),stoi(tokens[3]),stoi(tokens[4]),stoi(tokens[5]) };
 			placement_site.emplace_back(temp);
-			row_start_x = stoi(tokens[1]);
-			row_start_y = stoi(tokens[2]);
+			if (min_x_start > stoi(tokens[1])) {
+				min_x_start = stoi(tokens[1]);
+			}
+			if (min_y_start > stoi(tokens[2])) {
+				min_y_start = stoi(tokens[2]);
+			}
+			//row_start_x = stoi(tokens[1]);
+			//row_start_y = stoi(tokens[2]);
 			row_width = stoi(tokens[3]);
 			row_height = stoi(tokens[4]);
 			
@@ -681,6 +708,8 @@ void input_file() {
 		count++;
 		fflush(stdin);
 	}
+	row_start_x = min_x_start;
+	row_start_y = min_y_start;
 	cout << "end of read file\n";
 	file.close();
 	return;
