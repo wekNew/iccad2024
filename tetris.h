@@ -24,9 +24,9 @@ struct OnsiteLocation {
 class Window {
 private:
 	int x_pos, y_pos, height, width;
-	vector<Cell*> FF;
-	vector<Cell*> Gate;
-	vector<Cell*> EdgeCell;
+	vector<shared_ptr<Cell>> FF;
+	vector<shared_ptr<Cell>> Gate;
+	vector<shared_ptr<Cell>> EdgeCell;
 	vector<vector<Interval>> row_interval;
 	vector<OnsiteLocation*> row_onsite_pos;
 
@@ -44,7 +44,7 @@ private:
 					temp.emplace_back(e);
 
 				}
-				
+
 			}
 			else {
 				cout << "Error : multi-row out of bounary\n";
@@ -56,7 +56,7 @@ private:
 		int count = 0;
 		bool record = false;
 		Interval current_interval;
-		
+
 
 		for (auto v : temp) {
 			count += v.identity;
@@ -85,16 +85,16 @@ public:
 	int get_height() {
 		return height;
 	}
-	vector<Cell*>& access_FF() {
+	vector<shared_ptr<Cell>>& access_FF() {
 		return FF;
 	}
-	vector<Cell*>& access_Gate() {
+	vector<shared_ptr<Cell>>& access_Gate() {
 		return Gate;
 	}
-	vector<Cell*>& access_EdgeCell() {
+	vector<shared_ptr<Cell>>& access_EdgeCell() {
 		return EdgeCell;
 	}
-	vector<Interval> get_valid_interval(int current_row,int row_height) {
+	vector<Interval> get_valid_interval(int current_row, int row_height) {
 		if (row_height == 1) {
 			return row_interval.at(current_row);
 		}
@@ -113,8 +113,8 @@ public:
 inline int IndexConvert(float pos, int window_start_pos, int unit) {
 	return ((pos - window_start_pos) / unit);
 }
-Window FindWindowForMBFF(Cell& MBFF, vector<vector<Window>> windows, int window_start_x, int window_start_y, int unit_x, int unit_y);
-Window CombiWindow(vector<vector<Window>> windows, int x_start_index, int y_start_index, int x_end_index, int y_end_index);
+shared_ptr<Window> FindWindowForMBFF(shared_ptr<Cell> MBFF, vector<vector<shared_ptr<Window>>> windows, int window_start_x, int window_start_y, int unit_x, int unit_y);
+shared_ptr<Window> CombiWindow(vector<vector<shared_ptr<Window>>> windows, int x_start_index, int y_start_index, int x_end_index, int y_end_index);
 
 
 

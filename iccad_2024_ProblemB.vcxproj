@@ -26,7 +26,6 @@
     <ClCompile Include="meanShift.cpp" />
     <ClCompile Include="netlist.cpp" />
     <ClCompile Include="Cluster.cpp" />
-    <ClCompile Include="perturbation.cpp" />
     <ClCompile Include="pin.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="partition.cpp" />
@@ -39,7 +38,6 @@
     <ClInclude Include="legalize.h" />
     <ClInclude Include="partition.h" />
     <ClInclude Include="meanShift.h" />
-    <ClInclude Include="perturbation.h" />
     <ClInclude Include="pin.h" />
     <ClInclude Include="table.h" />
     <ClInclude Include="cell.h" />

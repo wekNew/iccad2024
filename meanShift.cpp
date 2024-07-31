@@ -13,15 +13,15 @@ struct Neighbor {
     float variance;
 };
 
-void meanShift(std::vector<Cell>& cells, float max_bandwidth, int M, int K, float epsilon, vector<vector<Cell*>>& clusters) {
+void meanShift(std::vector<shared_ptr<Cell>>& cells, float max_bandwidth, int M, int K, float epsilon, vector<vector<weak_ptr<Cell>>>& clusters) {
     cout << "start to meanShift\n";
     std::vector<Point> points;
     for (auto& cell : cells) {
-        points.emplace_back(cell.getPos());
+        points.emplace_back(cell->getPos());
     }
 
     vector<float> final_bandwidths;
-    if (M + 1 > points.size()) {
+    if (M +1>= points.size()) {
         M = points.size() - 2;
     }
     for (int i = 0; i < points.size(); ++i) {
@@ -33,7 +33,7 @@ void meanShift(std::vector<Cell>& cells, float max_bandwidth, int M, int K, floa
             each_distance.emplace_back(distance);
         }
         sort(each_distance.begin(), each_distance.end());
-        final_bandwidths.emplace_back(VariableBandwidth(max_bandwidth, each_distance[M + 1], &cells[i]));
+        final_bandwidths.emplace_back(VariableBandwidth(max_bandwidth, each_distance[M + 1], cells[i]));
     }
 
     ClustersBuilder builder = ClustersBuilder(points, epsilon);
@@ -80,23 +80,20 @@ void meanShift(std::vector<Cell>& cells, float max_bandwidth, int M, int K, floa
                 cout << count << " distance : " << c.distance << ", variance : " << c.variance<<endl;
             }*/
             // 计算新位置
-            //cout << "\ti = " << i << endl;
             for (const auto& neighbor : neighbors) {
                 
                 float gaussian = std::exp(-(neighbor.distance * neighbor.distance) / (2 * neighbor.variance * neighbor.variance));
-                //cout << "\tneighbor.distance = " << neighbor.distance << " , guassian = " << gaussian << endl;
+                
                 newPosition += neighbor.point * gaussian;
                 totalWeight += gaussian;
             }
             newPosition /= totalWeight;
             if (iterations == 0) {
-                
-                //cout << "\tnewPosition = (" << newPosition.access_Values().at(0) << "," << newPosition.access_Values().at(1) 
-                    //<< ") original Position = (" << pointToShift.access_Values().at(0) << "," << pointToShift.access_Values().at(1) << ")\n";
                 newPosition = (newPosition + pointToShift * 9) / 10;
             }
-            #pragma omp critical
+            
             builder.shiftPoint(i, newPosition);
+            #pragma omp critical
         }
         ++iterations;
     }
@@ -125,18 +122,18 @@ void meanShift(std::vector<Cell>& cells, float max_bandwidth, int M, int K, floa
 
     // 将新的位置应用回 cells
     for (long i = 0; i < points.size(); ++i) {
-        cells[i].setPos(builder.getShiftedPoint(i));
+        cells[i]->setPos(builder.getShiftedPoint(i));
     }
 
     
     buildClustersWithEpsilon(cells, epsilon,clusters);
     
 }
-float VariableBandwidth(float max_distance,float Mth_distance, Cell* cell) {
+float VariableBandwidth(float max_distance,float Mth_distance,shared_ptr<Cell> cell) {
     cout << "\tVariableBandwidth=" << std::min(max_distance, (float)(atan(cell->get_min_slack() - 5) / PI + 0.5) * Mth_distance) << "( " <<Mth_distance<<","<<cell->get_min_slack()<<"," << (atan(cell->get_min_slack() - 5) / PI + 0.5)  << " )" << endl;
     return std::min(max_distance, (float)(atan(cell->get_min_slack()-5)/PI + 0.5) * Mth_distance);
 }
-void buildClustersWithEpsilon(std::vector<Cell>& cells, float epsilon, vector < vector<Cell*>>& clusters) {
+void buildClustersWithEpsilon(std::vector<shared_ptr<Cell>>& cells, float epsilon, vector < vector<weak_ptr<Cell>>>& clusters) {
     cout << "clustering with epsilon\n";
     //std::vector<Cluster> clusters;
     //std::vector<bool> visited(cells.size(), false);
@@ -152,7 +149,7 @@ void buildClustersWithEpsilon(std::vector<Cell>& cells, float epsilon, vector < 
         int in_cluster_num = connected[i];
 
         for (int j = i+1; j < cells.size(); ++j) {
-            if (cells[i].getPos().euclideanDistance(cells[j].getPos()) <= epsilon) {
+            if (cells[i]->getPos().euclideanDistance(cells[j]->getPos()) <= epsilon) {
                 if (connected[j] == -1) {
                     connected[j] = in_cluster_num;
                 }
@@ -172,14 +169,14 @@ void buildClustersWithEpsilon(std::vector<Cell>& cells, float epsilon, vector < 
         bool create = true;
         for (int j = 0; j < boss.size();j++) {
             if (findRoot(i, connected) == boss[j]) {
-                clusters[j].emplace_back(&cells[i]);
+                clusters[j].emplace_back(cells[i]);
                 //clusters[j].add_cell(&cells[i]);
                 create = false;
             }
         }
         if (create) {
-            vector<Cell*> newCluster;
-            newCluster.emplace_back(&cells[i]);
+            vector<weak_ptr<Cell>> newCluster;
+            newCluster.emplace_back(cells[i]);
             clusters.emplace_back(newCluster);
             boss.emplace_back(i);
         }

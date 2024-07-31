@@ -1,0 +1,60 @@
+Window at [ 0 , 0] :
+	pos : (0 , 0 )
+	width : 200	height : 500
+	FF : C1 C2
+	Gate :
+	EdgeCell :
+Window at [ 0 , 1] :
+	pos : (0 , 500 )
+	width : 200	height : 500
+	FF :
+	Gate :
+	EdgeCell :
+Window at [ 1 , 0] :
+	pos : (200 , 0 )
+	width : 200	height : 500
+	FF : C3 C5 C8'0 C8'1
+	Gate :
+	EdgeCell : C9'0 C9'1
+Window at [ 1 , 1] :
+	pos : (200 , 500 )
+	width : 200	height : 500
+	FF :
+	Gate :
+	EdgeCell : C9'0 C9'1
+Window at [ 2 , 0] :
+	pos : (400 , 0 )
+	width : 200	height : 500
+	FF :
+	Gate :
+	EdgeCell :
+Window at [ 2 , 1] :
+	pos : (400 , 500 )
+	width : 200	height : 500
+	FF : C6
+	Gate :
+	EdgeCell : C4
+Window at [ 3 , 0] :
+	pos : (600 , 0 )
+	width : 200	height : 500
+	FF :
+	Gate :
+	EdgeCell :
+Window at [ 3 , 1] :
+	pos : (600 , 500 )
+	width : 200	height : 500
+	FF : C10'0 C12 C10'1
+	Gate :
+	EdgeCell : C4
+Window at [ 4 , 0] :
+	pos : (800 , 0 )
+	width : 200	height : 500
+	FF :
+	Gate :
+	EdgeCell :
+Window at [ 4 , 1] :
+	pos : (800 , 500 )
+	width : 200	height : 500
+	FF : C7 C11
+	Gate :
+	EdgeCell :

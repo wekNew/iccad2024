@@ -26,7 +26,7 @@
       <UniqueIdentifier>{fe0f0d48-96d6-486c-9567-80340acc93e3}</UniqueIdentifier>
     </Filter>
     <Filter Include="algorithm\tetris">
-      <UniqueIdentifier>{d4ca66de-c4d4-410b-b080-785333a8472d}</UniqueIdentifier>
+      <UniqueIdentifier>{bf03e86b-ea9f-4ea3-9c7b-ee38f470740a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -56,9 +56,6 @@
     </ClCompile>
     <ClCompile Include="partition.cpp">
       <Filter>algorithm\partition</Filter>
-    </ClCompile>
-    <ClCompile Include="perturbation.cpp">
-      <Filter>algorithm\perturbation</Filter>
     </ClCompile>
     <ClCompile Include="pin.cpp">
       <Filter>component</Filter>
@@ -97,9 +94,6 @@
     </ClInclude>
     <ClInclude Include="partition.h">
       <Filter>algorithm\partition</Filter>
-    </ClInclude>
-    <ClInclude Include="perturbation.h">
-      <Filter>algorithm\perturbation</Filter>
     </ClInclude>
     <ClInclude Include="legalize.h">
       <Filter>algorithm\legalize</Filter>

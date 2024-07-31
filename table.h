@@ -5,6 +5,7 @@
 
 #include "cell.h"
 #include <vector>
+#include <memory>
 
 #define MAX_BIT 20
 #define INT_MAX 2147483647

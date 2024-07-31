@@ -1,7 +1,7 @@
 C1:
 	model:	FF1
 	bit:	1
-	x_pox	0	y_pos	0
+	x_pox	0 -> 0	y_pos	0 -> 0
 	height:	100	width	120
 	pincout:	3
 		pin:	D:(0,8)	TimingSlack=10
@@ -12,7 +12,7 @@ C1:
 C2:
 	model:	FF3
 	bit:	1
-	x_pox	150	y_pos	0
+	x_pox	150 -> 150	y_pos	0 -> 0
 	height:	200	width	40
 	pincout:	3
 		pin:	D:(20,0)	TimingSlack=10
@@ -23,7 +23,7 @@ C2:
 C3:
 	model:	FF2
 	bit:	1
-	x_pox	300	y_pos	0
+	x_pox	300 -> 300	y_pos	0 -> 0
 	height:	100	width	100
 	pincout:	3
 		pin:	D:(80,50)	TimingSlack=-10
@@ -34,7 +34,7 @@ C3:
 C4:
 	model:	FF1
 	bit:	1
-	x_pox	500	y_pos	0
+	x_pox	500 -> 500	y_pos	0 -> 0
 	height:	100	width	120
 	pincout:	3
 		pin:	D:(0,8)	TimingSlack=4
@@ -45,7 +45,7 @@ C4:
 C5:
 	model:	FF2
 	bit:	1
-	x_pox	200	y_pos	200
+	x_pox	200 -> 200	y_pos	200 -> 200
 	height:	100	width	100
 	pincout:	3
 		pin:	D:(80,50)	TimingSlack=0
@@ -56,7 +56,7 @@ C5:
 C6:
 	model:	FF4
 	bit:	1
-	x_pox	500	y_pos	100
+	x_pox	500 -> 500	y_pos	100 -> 100
 	height:	100	width	80
 	pincout:	3
 		pin:	D:(50,85)	TimingSlack=0
@@ -67,7 +67,7 @@ C6:
 C7:
 	model:	FF4
 	bit:	1
-	x_pox	800	y_pos	200
+	x_pox	800 -> 800	y_pos	200 -> 200
 	height:	100	width	80
 	pincout:	3
 		pin:	D:(50,85)	TimingSlack=0
@@ -75,49 +75,43 @@ C7:
 		pin:	clk:(0,50)	TimingSlack=0
 	QpinDelay:	1
 	gate_power:	10
-C8:
-	model:	FF5
-	bit:	2
-	x_pox	300	y_pos	300
-	height:	200	width	60
-	pincout:	5
-		pin:	D0:(0,9)	TimingSlack=10
-		pin:	D1:(0,6)	TimingSlack=0
-		pin:	Q0:(8,9)	TimingSlack=0
-		pin:	Q1:(8,6)	TimingSlack=0
-		pin:	clk:(50,100)	TimingSlack=0
-	QpinDelay:	3
-	gate_power:	5
-C9:
-	model:	FF5
-	bit:	2
-	x_pox	360	y_pos	400
-	height:	200	width	60
-	pincout:	5
-		pin:	D0:(0,9)	TimingSlack=10
-		pin:	D1:(0,6)	TimingSlack=0
-		pin:	Q0:(8,9)	TimingSlack=0
-		pin:	Q1:(8,6)	TimingSlack=0
-		pin:	clk:(50,100)	TimingSlack=0
-	QpinDelay:	3
-	gate_power:	5
-C10:
-	model:	FF5
-	bit:	2
-	x_pox	700	y_pos	700
-	height:	200	width	60
-	pincout:	5
-		pin:	D0:(0,9)	TimingSlack=10
-		pin:	D1:(0,6)	TimingSlack=0
-		pin:	Q0:(8,9)	TimingSlack=0
-		pin:	Q1:(8,6)	TimingSlack=0
-		pin:	clk:(50,100)	TimingSlack=0
-	QpinDelay:	3
-	gate_power:	5
+C8'0:
+	model:	FF3
+	bit:	1
+	x_pox	300 -> 300	y_pos	300 -> 300
+	height:	200	width	40
+	pincout:	3
+		pin:	D:(20,0)	TimingSlack=10
+		pin:	Q:(55,24)	TimingSlack=0
+		pin:	clk:(16,25)	TimingSlack=0
+	QpinDelay:	2
+	gate_power:	8
+C9'0:
+	model:	FF3
+	bit:	1
+	x_pox	360 -> 360	y_pos	400 -> 400
+	height:	200	width	40
+	pincout:	3
+		pin:	D:(20,0)	TimingSlack=10
+		pin:	Q:(55,24)	TimingSlack=0
+		pin:	clk:(16,25)	TimingSlack=0
+	QpinDelay:	2
+	gate_power:	8
+C10'0:
+	model:	FF3
+	bit:	1
+	x_pox	700 -> 700	y_pos	700 -> 700
+	height:	200	width	40
+	pincout:	3
+		pin:	D:(20,0)	TimingSlack=10
+		pin:	Q:(55,24)	TimingSlack=0
+		pin:	clk:(16,25)	TimingSlack=0
+	QpinDelay:	2
+	gate_power:	8
 C11:
 	model:	FF3
 	bit:	1
-	x_pox	800	y_pos	700
+	x_pox	800 -> 800	y_pos	700 -> 700
 	height:	200	width	40
 	pincout:	3
 		pin:	D:(20,0)	TimingSlack=0
@@ -128,7 +122,7 @@ C11:
 C12:
 	model:	FF1
 	bit:	1
-	x_pox	600	y_pos	900
+	x_pox	600 -> 600	y_pos	900 -> 900
 	height:	100	width	120
 	pincout:	3
 		pin:	D:(0,8)	TimingSlack=0
@@ -136,3 +130,36 @@ C12:
 		pin:	clk:(10,40)	TimingSlack=0
 	QpinDelay:	1
 	gate_power:	10
+C8'1:
+	model:	FF3
+	bit:	1
+	x_pox	300 -> 300	y_pos	300 -> 300
+	height:	200	width	40
+	pincout:	3
+		pin:	D:(20,0)	TimingSlack=0
+		pin:	Q:(55,24)	TimingSlack=0
+		pin:	clk:(16,25)	TimingSlack=0
+	QpinDelay:	2
+	gate_power:	8
+C9'1:
+	model:	FF3
+	bit:	1
+	x_pox	360 -> 360	y_pos	400 -> 400
+	height:	200	width	40
+	pincout:	3
+		pin:	D:(20,0)	TimingSlack=0
+		pin:	Q:(55,24)	TimingSlack=0
+		pin:	clk:(16,25)	TimingSlack=0
+	QpinDelay:	2
+	gate_power:	8
+C10'1:
+	model:	FF3
+	bit:	1
+	x_pox	700 -> 700	y_pos	700 -> 700
+	height:	200	width	40
+	pincout:	3
+		pin:	D:(20,0)	TimingSlack=0
+		pin:	Q:(55,24)	TimingSlack=0
+		pin:	clk:(16,25)	TimingSlack=0
+	QpinDelay:	2
+	gate_power:	8

@@ -51,14 +51,14 @@ public:
     std::vector<float>& access_Values() {
         return values;
     }
-
-    float get_xpos() {
+    
+    float get_xpos()
+    {
         return values.at(0);
     }
     float get_ypos() {
         return values.at(1);
     }
-    
 private:
     std::vector<float> values;
      

@@ -16,8 +16,8 @@ void show_netlist(NetList temp) {
 	}
 	outFile << "NetList have:\t" << temp.get_net_count() << endl;
 	for (auto v : temp.get_contain_net()) {
-		outFile << "\t" << v.get_net_name() << ":\t";
-		for (auto u : v.get_connect_pin()) {
+		outFile << "\t" << v->get_net_name() << ":\t";
+		for (auto u : v->get_connect_pin()) {
 			if (u->get_belong() != NULL) {
 				outFile << u->get_belong()->get_inst_name() << "/";
 			}
