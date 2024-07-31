@@ -7,11 +7,14 @@
 using namespace std;
 #include "cell.h"
 
-
-
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include "cell.h"
 
 void InitialDebanking(vector<Cell>& FF, vector<Cell*>& best_st_table) {
 	// 檢查 best_st_table 是否為空
+
 	if (best_st_table.empty()) {
 		cerr << "Error: best_st_table is empty!" << endl;
 		return;
@@ -27,41 +30,56 @@ void InitialDebanking(vector<Cell>& FF, vector<Cell*>& best_st_table) {
 			// 獲取當前位置
 			Point currentPos = FF[i].getPos();
 			// 複製和重設位置
+			int original_bit = FF[i].get_bit();
 			Cell original_FF = FF[i];
-			Pin original_clk_pin = {"clk",0,0};
-			
+			Pin original_clk_pin = { "clk",0,0 };
+			//cout << "origianl_FF : " << original_FF.get_inst_name() << endl;
+
 			for (auto& v : original_FF.get_pin()) {
+				cout << "\tpin_name : " << v.get_pin_name() << endl;
+				cout << v.get_belong()->get_inst_name() << endl;
 				if (v.get_pin_name() == "clk") {
 					original_clk_pin = v;
+					cout << "here\n";
 				}
 			}
-			
-			for (int j = 0; j < original_FF.get_bit(); ++j) {
+
+			for (int j = 0; j < original_bit; ++j) {
 				Cell copy_cell = *best_st_table[0];
+
+
 				cout << "copy_cell's pin count : " << copy_cell.get_pin().size() << endl;
+				for (auto& v : copy_cell.get_pin()) {
+					if (&v == nullptr) {
+						cout << "it is null\n";
+					}
+					cout << "\tpin_name : " << v.get_pin_name() << endl;
+					v.set_belong(&original_FF);
+				}
+
 				copy_cell.setPos(currentPos);
 				//cout << "currentPos=" << currentPos.access_Values().at(0) << "," << currentPos.access_Values().at(1) << endl;
-				copy_cell.set_inst(original_FF.get_inst_name() + "'" + to_string(j),currentPos.access_Values().at(0), currentPos.access_Values().at(1));
+				copy_cell.set_inst(original_FF.get_inst_name() + "'" + to_string(j), currentPos.access_Values().at(0), currentPos.access_Values().at(1));
 				copy_cell.get_pin().at(0).set_timing_slack(original_FF.get_pin().at(j).get_timing_slack());
-				
+
 				if (j == 0) {
 					FF[i] = copy_cell; // 更新當前 Cell
 				}
 				else {
-					original_clk_pin.get_clk_net()->set_pin(&(copy_cell.get_pin().at(2)));
-					
-					newCells.emplace_back(copy_cell); // 添加到新向量
-					//newCells.reserve(newCells.size() + 1);
-					//newCells.push_back(copy_cell);
+
+					Net* temp_net = original_clk_pin.get_clk_net();
+					temp_net->set_pin(&(copy_cell.get_pin().at(2)));
+
+					newCells.push_back((copy_cell)); // 添加到新向量
+
 				}
 			}
+
 		}
 	}
-
 	// 在遍歷結束後一次性插入新元素
-	FF.reserve(FF.size() + newCells.size());
+	//FF.reserve(FF.size() + newCells.size());
 	FF.insert(FF.end(), newCells.begin(), newCells.end());
-
 }
 
 

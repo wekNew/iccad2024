@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <stdio.h>
 #include<iostream>
 #include<string.h>
@@ -37,16 +37,64 @@ private:
 	set<int> horizontal_overlap_index;
 
 public:
-	Cell(int bit, string ff_name, int ff_width, int ff_height, int pin_count) {
-		this->bit = bit;
-		this->ff_name = ff_name;
-		this->ff_width = ff_width;
-		this->ff_height = ff_height;
-		this->pin_count = pin_count;
-		cluster_num = -1;
-		children.clear();
+	// 默认构造函数
+	Cell(int bit, string ff_name, int ff_width, int ff_height, int pin_count)
+		: bit(bit), ff_name(ff_name), ff_width(ff_width), ff_height(ff_height),
+		pin_count(pin_count), cluster_num(-1), x_pos(0), y_pos(0),
+		q_pin_delay(0), gate_power(0.0), p_right(0), p_left(0), p_up(0), p_down(0) {}
+
+	// 复制构造函数
+	Cell(const Cell& other)
+		: bit(other.bit), ff_name(other.ff_name), ff_width(other.ff_width), ff_height(other.ff_height),
+		pin_count(other.pin_count), x_pos(other.x_pos), y_pos(other.y_pos), pos(other.pos),
+		inst_name(other.inst_name), cluster_num(other.cluster_num), q_pin_delay(other.q_pin_delay),
+		gate_power(other.gate_power), p_right(other.p_right), p_left(other.p_left),
+		p_up(other.p_up), p_down(other.p_down) {
+		// 深拷贝 ff_pin
+		for (const auto& pin : other.ff_pin) {
+			ff_pin.push_back(pin); // 使用拷贝构造函数复制 Pin 对象
+			ff_pin.back().set_belong(this); // 更新 belong 指针
+		}
+		children = other.children; // 浅拷贝，因为是指针
+		vertical_overlap_index = other.vertical_overlap_index;
+		horizontal_overlap_index = other.horizontal_overlap_index;
 	}
-	
+
+	// 赋值运算符
+	Cell& operator=(const Cell& other) {
+		if (this == &other) return *this; // 防止自我赋值
+
+		bit = other.bit;
+		ff_name = other.ff_name;
+		ff_width = other.ff_width;
+		ff_height = other.ff_height;
+		pin_count = other.pin_count;
+		x_pos = other.x_pos;
+		y_pos = other.y_pos;
+		pos = other.pos;
+		inst_name = other.inst_name;
+		cluster_num = other.cluster_num;
+		q_pin_delay = other.q_pin_delay;
+		gate_power = other.gate_power;
+		p_right = other.p_right;
+		p_left = other.p_left;
+		p_up = other.p_up;
+		p_down = other.p_down;
+
+		// 清空当前的 ff_pin 并进行深拷贝
+		ff_pin.clear();
+		for (const auto& pin : other.ff_pin) {
+			ff_pin.push_back(pin); // 使用拷贝构造函数复制 Pin 对象
+			ff_pin.back().set_belong(this); // 更新 belong 指针
+		}
+
+		children = other.children; // 浅拷贝，因为是指针
+		vertical_overlap_index = other.vertical_overlap_index;
+		horizontal_overlap_index = other.horizontal_overlap_index;
+
+		return *this;
+	}
+
 	void set_inst(string inst_name, float x_pos, float y_pos) {
 		this->inst_name = inst_name;
 		pos = { x_pos,y_pos };

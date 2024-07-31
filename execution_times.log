@@ -1,2 +1,4 @@
-input_file() execution time: 0.0130423 seconds
-buildBestStTable() execution time: 0.0002026 seconds
+input_file() execution time: 0.0301234 seconds
+buildBestStTable() execution time: 0.0002457 seconds
+InitialDebanking() execution time: 1e-07 seconds
+initialize() execution time: 0.0046045 seconds

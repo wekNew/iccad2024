@@ -100,9 +100,11 @@ int main() {
 		START_TIMER(buildBestStTable)
 		buildBestStTable(standard_FF, best_st_table, beta, Gamma);
 	STOP_TIMER(buildBestStTable, "buildBestStTable()", logfile)
-
+		
+		
+		
 		START_TIMER(InitialDebanking)
-		InitialDebanking(FF, best_st_table);
+		//InitialDebanking(FF, best_st_table);
 	STOP_TIMER(InitialDebanking, "InitialDebanking()", logfile)
 		cout << "end of initilDebanding\n";
 
@@ -120,14 +122,14 @@ int main() {
 		show();
 	int max_cluster_size = 0;
 	START_TIMER(meanShift)
-		cout << "start to meanshift\n";
-		for (auto& v : same_clk_FF) {
+		//cout << "start to meanshift\n";
+		for (auto v : same_clk_FF) {
 			meanShift(v, max_bandwidth, M, K, epsilon, CLUSTERS);
 		}
 		for (auto& v : CLUSTERS) {
 			Cluster* temp = new Cluster(v);
 			temp->FindCentroid();
-			clusters.emplace_back(temp);
+			clusters.push_back(temp);
 
 			if (v.size() > max_cluster_size) {
 				max_cluster_size = v.size();
@@ -168,14 +170,14 @@ int main() {
 		
 	}
 
-
+	/*
 	START_TIMER(legal)
 		for (int i = 0; i < MBFF.size(); i++) {
 			MBFF[i].set_clusterNum(i);
 		}
 	legalize(MBFF, bin_width, bin_height, die.x_min, die.y_min, die.x_max, die.y_max);
 	STOP_TIMER(legal, "legalize()", logfile)
-
+	*/
 		drawPlot();
 
 	logfile.close();
@@ -192,39 +194,35 @@ void initialize() {
 		total_pin.reserve(total_pin.size() + 1);
 		total_pin.push_back(&v);
 	}*/
-	for (auto& v : FF) {
-		for (auto& u : v.get_pin()) {
-			u.set_belong(&v);
-			//total_pin.reserve(total_pin.size() + 1);
-			//total_pin.push_back(&u);
-		}
-	}
 	
-	for (auto& v : Gate) {
-		for (auto& u : v.get_pin()) {
-			u.set_belong(&v);
-		}
-	}
-	
+	//cout << "Herre\n";
 	for (auto& v : netlist.get_contain_net()) {
 		vector<Cell> temp;
 		temp.clear();
+		/*
+		for (int i = 0; i < v.get_connect_pin().size(); ++i) {
+			cout << "pin name = " << v.get_connect_pin().at(i)->get_pin_name() << endl;
+		}
+		*/
 		for (auto& u : v.get_connect_pin()) {
+			cout << "u pin name = " << u->get_pin_name() << endl;
 			if (u->get_pin_name() == "clk") {
 				Cell* cellPtr = u->get_belong();
 				if (cellPtr != nullptr) {
-					temp.emplace_back(*cellPtr);
+					std::cout << "belong_emplace\n";
+					temp.push_back(*cellPtr);
 				}
-				
 			}
+			
 		}
+		
 		if (temp.size() != 0) {
 			same_clk_FF.emplace_back(temp);
 		}
 	}
 
 	
-	cout << "start to bulid windows\n";
+	std::cout << "start to bulid windows\n";
 	for (int X = row_start_x; X < die.x_max; X += row_width * window_width) {
 		vector<Window> row_window; 
 		int x_end = X + row_width * window_width;
@@ -441,7 +439,7 @@ void input_file() {
 	}
 	string line;
 	int count = 0;
-	int min_x_start=10000000, min_y_start=100000000;
+	int min_x_start = 10000000, min_y_start = 100000000;
 	while (getline(file, line)) {
 		istringstream linestream(line);
 
@@ -560,11 +558,21 @@ void input_file() {
 					tokens.push_back(token);
 				}
 				bool find = false;
-				for (auto v : standard_FF) {
+				for (auto& v : standard_FF) {
 					if (v.get_ff_name() == tokens[2]) {
 						Cell temp_cell = v;
 						temp_cell.set_inst(tokens[1], stof(tokens[3]), stof(tokens[4]));
+						for (auto& u : temp_cell.get_pin()) {
+							u.set_belong(&temp_cell);
+							cout << "u.get_belong().get_inst_name() : " << u.get_belong()->get_inst_name() << endl;
+						}
+
 						FF.emplace_back(temp_cell);
+						/*for (auto& u : FF[FF.size() - 1].get_pin()) {
+							//u.set_belong(&temp_cell);
+							cout << "u.get_belong().get_inst_name() : " << u.get_belong()->get_inst_name() << endl;
+						}*/
+
 						find = true;
 						break;
 					}
@@ -574,6 +582,9 @@ void input_file() {
 						if (v.get_ff_name() == tokens[2]) {
 							Cell temp_cell = v;
 							temp_cell.set_inst(tokens[1], stof(tokens[3]), stof(tokens[4]));
+							for (auto& u : temp_cell.get_pin()) {
+								u.set_belong(&temp_cell);
+							}
 							Gate.emplace_back(temp_cell);
 							break;
 						}
@@ -595,7 +606,9 @@ void input_file() {
 					tokens.push_back(token);
 				}
 
-				Net temp_net = { tokens[1],stoi(tokens[2]) };
+				Net new_net = { tokens[1],stoi(tokens[2]) };
+				netlist.add_net(new_net);
+				Net* temp_net = &(netlist.get_contain_net().at(netlist.get_contain_net().size() - 1));
 				int pin_num = stoi(tokens[2]);
 				while (pin_num--) {//deal with pin_count
 					getline(file, line);
@@ -612,15 +625,41 @@ void input_file() {
 						string before = tokens[1].substr(0, pos); // 提取分割字元之前的部分
 						string after = tokens[1].substr(pos + 1);
 						for (auto& v : FF) {
+							bool find = false;
 							if (v.get_inst_name() == before) {
 								for (auto& u : v.get_pin()) {
 									if (u.get_pin_name() == after) {
-										
-										temp_net.set_pin(&u);
+
+										temp_net->set_pin(&u);
+										cout << "Pin " << u.get_pin_name() << " belongs to " << (u.get_belong() ? u.get_belong()->get_inst_name() : "null") << endl;
+
+										// Check Net and Pin before setting clk_net
 										if (after == "clk") {
-											
-											u.set_clk_net(&temp_net);
-											//cout << "pin form :" << u->get_belong()->get_inst_name() << "set_clk_net to " << u->get_clk_net()->get_net_name() << endl;
+											cout << "Before set_clk_net: Pin's clk_net is " << (u.get_clk_net() ? u.get_clk_net()->get_net_name() : "null") << endl;
+											u.set_clk_net(temp_net);
+											cout << "After set_clk_net: Pin's clk_net is " << (u.get_clk_net() ? u.get_clk_net()->get_net_name() : "null") << endl;
+										}
+										find = true;
+										cout << "Pin updated: " << u.get_pin_name() << " belongs to " << u.get_belong()->get_inst_name() << endl;
+										cout << "Net pin count: " << temp_net->get_connect_pin().size() << endl;
+										break;
+									}
+								}
+							}
+							if (find) {
+								break;
+							}
+						}
+						for (auto& v : Gate) {
+							if (v.get_inst_name() == before) {
+								for (auto& u : v.get_pin()) {
+									if (u.get_pin_name() == after) {
+
+										temp_net->set_pin(&u);
+										if (after == "clk") {
+
+											u.set_clk_net(temp_net);
+											cout << "pin form :" << u.get_belong()->get_inst_name() << "set_clk_net to " << u.get_clk_net()->get_net_name() << endl;
 										}
 										break;
 									}
@@ -632,22 +671,29 @@ void input_file() {
 						for (auto& v : die.input_pin) {
 							if (v.get_pin_name() == tokens[1]) {
 								//cout << "Here\n";
-								temp_net.set_pin(&v);
+								temp_net->set_pin(&v);
 								break;
 							}
 						}
 						for (auto& v : die.output_pin) {
 							if (v.get_pin_name() == tokens[1]) {
 								//cout << "Here\n";
-								temp_net.set_pin(&v);
+								temp_net->set_pin(&v);
 								break;
 							}
 						}
 					}
-
-
 				}
-				netlist.set_net(temp_net);
+				cout << "\nAfter setting pin, Net's pins count: " << temp_net->get_connect_pin().size() << endl;
+				for (auto pin : temp_net->get_connect_pin()) {
+					if (pin != nullptr) {
+						cout << "Pin name: " << pin->get_pin_name() << endl;
+						cout << "Pin belongs to: " << (pin->get_belong() ? pin->get_belong()->get_inst_name() : "null") << endl;
+					}
+					else {
+						cout << "Encountered a null pin pointer" << endl;
+					}
+				}
 			}
 		}
 		/////////////////////////////////////////////////////////////////
@@ -673,7 +719,7 @@ void input_file() {
 			//row_start_y = stoi(tokens[2]);
 			row_width = stoi(tokens[3]);
 			row_height = stoi(tokens[4]);
-			
+
 		}
 		/////////////////////////////////////////////////////////////////
 		else if (tokens[0] == "DisplacementDelay") {
@@ -725,6 +771,20 @@ void input_file() {
 		/////////////////////////////////////////////////////////////////
 		count++;
 		fflush(stdin);
+	}
+	for (auto& temp_net : netlist.get_contain_net()) {
+		for (auto& pin : temp_net.get_connect_pin()) {
+			if (pin != nullptr) {
+				cout << "Pin name: " << pin->get_pin_name() << endl;
+				cout << "Pin belongs to: " << (pin->get_belong() ? pin->get_belong()->get_inst_name() : "null") << endl;
+			}
+			else {
+				cout << "Encountered a null pin pointer" << endl;
+			}
+			if (pin->get_pin_name() == "clk") {
+				pin->set_clk_net(&temp_net);
+			}
+		}
 	}
 	row_start_x = min_x_start;
 	row_start_y = min_y_start;

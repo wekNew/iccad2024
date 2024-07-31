@@ -33,7 +33,7 @@ void meanShift(std::vector<Cell>& cells, float max_bandwidth, int M, int K, floa
             each_distance.emplace_back(distance);
         }
         sort(each_distance.begin(), each_distance.end());
-        final_bandwidths.emplace_back(VariableBandwidth(max_bandwidth, each_distance[M + 1], cells[i]));
+        final_bandwidths.emplace_back(VariableBandwidth(max_bandwidth, each_distance[M + 1], &cells[i]));
     }
 
     ClustersBuilder builder = ClustersBuilder(points, epsilon);
@@ -95,9 +95,6 @@ void meanShift(std::vector<Cell>& cells, float max_bandwidth, int M, int K, floa
                     //<< ") original Position = (" << pointToShift.access_Values().at(0) << "," << pointToShift.access_Values().at(1) << ")\n";
                 newPosition = (newPosition + pointToShift * 9) / 10;
             }
-            if (cells[i].get_inst_name() == "C102688") {
-                //history_pos[iterations] = newPosition;
-            }
             #pragma omp critical
             builder.shiftPoint(i, newPosition);
         }
@@ -135,9 +132,9 @@ void meanShift(std::vector<Cell>& cells, float max_bandwidth, int M, int K, floa
     buildClustersWithEpsilon(cells, epsilon,clusters);
     
 }
-float VariableBandwidth(float max_distance,float Mth_distance,Cell cell) {
-    cout << "\tVariableBandwidth=" << std::min(max_distance, (float)(atan(cell.get_min_slack() - 5) / PI + 0.5) * Mth_distance) << "( " <<Mth_distance<<","<<cell.get_min_slack()<<"," << (atan(cell.get_min_slack() - 5) / PI + 0.5)  << " )" << endl;
-    return std::min(max_distance, (float)(atan(cell.get_min_slack()-5)/PI + 0.5) * Mth_distance);
+float VariableBandwidth(float max_distance,float Mth_distance, Cell* cell) {
+    cout << "\tVariableBandwidth=" << std::min(max_distance, (float)(atan(cell->get_min_slack() - 5) / PI + 0.5) * Mth_distance) << "( " <<Mth_distance<<","<<cell->get_min_slack()<<"," << (atan(cell->get_min_slack() - 5) / PI + 0.5)  << " )" << endl;
+    return std::min(max_distance, (float)(atan(cell->get_min_slack()-5)/PI + 0.5) * Mth_distance);
 }
 void buildClustersWithEpsilon(std::vector<Cell>& cells, float epsilon, vector < vector<Cell*>>& clusters) {
     cout << "clustering with epsilon\n";

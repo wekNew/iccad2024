@@ -45,13 +45,14 @@ Inst C10 FF5 700 700
 Inst C11 FF3 800 700
 Inst C12 FF1 600 900
 NumNets 4
-Net N1 6
+Net N1 7
 Pin INPUT0
+Pin C11/D
 Pin C1/clk
 Pin C2/clk
 Pin C3/clk
 Pin C5/clk
-Pin C8/clk
+Pin C12/clk
 Net N2 6
 Pin INPUT1
 Pin C2/D
@@ -67,7 +68,7 @@ Pin C2/Q
 Pin OUTPUT1 
 Pin C10/clk
 Pin C11/clk
-Pin C12/clk
+Pin C8/clk
 BinWidth 250
 BinHeight 200
 BinMaxUtil 79

@@ -17,7 +17,7 @@ private:
 	string pin_name;
 	int x_pos, y_pos;
 	float timing_slack;
-	Cell *belong;
+	Cell* belong;
 	Net* clk_net;
 public:
 	Pin(string pin_name, int x_pos, int y_pos) {
@@ -30,16 +30,16 @@ public:
 	void set_timing_slack(float temp) {
 		timing_slack = temp;
 	}
-	
+
 	void set_belong(Cell* temp) {
 		belong = temp;
 	}
 
-	
+
 	void set_clk_net(Net* temp) {
 		clk_net = temp;
 	}
-	
+
 	////////get////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	string get_pin_name() {
 		return pin_name;
@@ -56,13 +56,12 @@ public:
 	Cell* get_belong() {
 		return belong;
 	}
-	
+
 	Net* get_clk_net() {
 		return clk_net;
 	}
-	
+
 };
 void show_pin();
 #endif 
-
 
