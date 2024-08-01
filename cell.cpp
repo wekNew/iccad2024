@@ -28,14 +28,14 @@ void InitialDebanking(vector<shared_ptr<Cell>>& FF, vector<Cell*>& best_st_table
 			// 複製和重設位置
 			Cell original_FF = *FF[i];
 			//Cell test = FF[i];
-			shared_ptr<Pin> original_clk_pin = make_shared<Pin>( "clk",0,0 );
+			shared_ptr<Pin> original_clk_pin = make_shared<Pin>( "CLK",0,0 );
 			//shared_ptr<Net> original_clk_net
 			//cout << "origianl_FF : " << original_FF.get_inst_name() << endl;
 
 			for (auto& v : original_FF.get_pin()) {
 				cout << "\tpin_name : " << v->get_pin_name() << endl;
 				cout << v->get_belong()->get_inst_name() << endl;
-				if (v->get_pin_name() == "clk") {
+				if (v->get_pin_name() == "CLK") {
 					original_clk_pin = v;
 					
 				}
@@ -45,12 +45,12 @@ void InitialDebanking(vector<shared_ptr<Cell>>& FF, vector<Cell*>& best_st_table
 				if (j == 0) {
 					FF[i]->get_pin().clear();
 					FF[i]->inherit_data(*best_st_table.at(0));
-					cout << "copy_cell's pin count : " << FF[i]->get_pin().size() << endl;
+					//cout << "copy_cell's pin count : " << FF[i]->get_pin().size() << endl;
 					for (auto& v : FF[i]->get_pin()) {
 						if (&v == nullptr) {
 							cout << "it is null\n";
 						}
-						cout << "\tpin_name : " << v->get_pin_name() << endl;
+						//cout << "\tpin_name : " << v->get_pin_name() << endl;
 						v->set_belong(FF[i]);
 					}
 					FF[i]->setPos(currentPos);
@@ -63,12 +63,12 @@ void InitialDebanking(vector<shared_ptr<Cell>>& FF, vector<Cell*>& best_st_table
 					shared_ptr<Cell> copy_cell = make_shared<Cell>(0, "initial", 0, 0, 0);
 					copy_cell->inherit_data(*best_st_table.at(0));
 
-					cout << "copy_cell's pin count : " << copy_cell->get_pin().size() << endl;
+					//cout << "copy_cell's pin count : " << copy_cell->get_pin().size() << endl;
 					for (auto& v : copy_cell->get_pin()) {
 						if (&v == nullptr) {
 							cout << "it is null\n";
 						}
-						cout << "\tpin_name : " << v->get_pin_name() << endl;
+						//cout << "\tpin_name : " << v->get_pin_name() << endl;
 						v->set_belong(copy_cell);
 					}
 

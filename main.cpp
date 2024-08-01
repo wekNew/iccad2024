@@ -389,7 +389,7 @@ void input_file() {
 									if (u->get_pin_name() == after) {
 										//cout << "Find Net with cell : " << v->get_inst_name() <<" / " << u->get_pin_name() <<" belong to " <<u->get_belong()->get_inst_name()<< endl;
 										temp_net->add_pin(u);
-										if (after == "Clk") {
+										if (after == "CLK") {
 											//cout << "\tBefore set_clk_net: Pin's clk_net is " << (u->get_clk_net() ? u->get_clk_net()->get_net_name() : "null") << endl;
 											u->set_clk_net(temp_net);
 											//cout << "\tAfter set_clk_net: Pin's clk_net is " << (u->get_clk_net() ? u->get_clk_net()->get_net_name() : "null") << endl;
@@ -406,7 +406,7 @@ void input_file() {
 									if (u->get_pin_name() == after) {
 										//cout << "Find Net with cell : " << v->get_inst_name() << " / " << u->get_pin_name() << " belong to " << u->get_belong()->get_inst_name() << endl;
 										temp_net->add_pin(u);
-										if (after == "Clk") {
+										if (after == "CLK") {
 											//cout << "\tBefore set_clk_net: Pin's clk_net is " << (u->get_clk_net() ? u->get_clk_net()->get_net_name() : "null") << endl;
 											u->set_clk_net(temp_net);
 											//cout << "\tAfter set_clk_net: Pin's clk_net is " << (u->get_clk_net() ? u->get_clk_net()->get_net_name() : "null") << endl;
@@ -535,7 +535,7 @@ void initialize() {
 		*/
 		for (auto& u : v->get_connect_pin()) {
 			//cout << "u pin name = " << u->get_pin_name() << endl;
-			if (u->get_pin_name() == "Clk") {
+			if (u->get_pin_name() == "CLK") {
 				shared_ptr<Cell> cellPtr = u->get_belong();
 				if (cellPtr != nullptr) {
 					//std::cout << u->get_pin_name()<<" belong_emplace -> "<<u->get_belong()->get_inst_name()<<"\n";
