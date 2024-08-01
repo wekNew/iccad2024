@@ -35,6 +35,7 @@ string input_filename = "test.txt";
 void input_file();
 void initialize();
 void show();
+void show_same_clk_FF();
 void show_cluster(vector < shared_ptr<Cluster>> clusters);
 void show_MBFF();
 void show_windows();
@@ -106,17 +107,7 @@ int main() {
 		show();
 	show_windows();
 
-	for (int i = 0; i < same_clk_FF.size(); ++i) {
-		cout << "clk " << i << "\t:\n";
-		for (auto v : same_clk_FF.at(i)) {
-			cout << "\tname : " << v->get_inst_name() << "\tpos : (" << v->getPos().get_xpos() << "," << v->getPos().get_ypos() << endl;
-			cout << "\t\tpin : ";
-			for (auto u : v->get_pin()) {
-				cout << " " << u->get_belong()->get_inst_name() << "/" << u->get_pin_name();
-			}
-			cout << endl;
-		}
-	}
+	
 
 	int max_cluster_size = 0;
 	START_TIMER(meanShift)
@@ -330,7 +321,7 @@ void input_file() {
 
 						for (auto& u : temp_cell->get_pin()) {
 							u->set_belong(temp_cell);
-							cout << "u.get_belong().get_inst_name() : " << u->get_belong()->get_inst_name() << endl;
+							//cout << "u.get_belong().get_inst_name() : " << u->get_belong()->get_inst_name() << endl;
 						}
 
 						FF.emplace_back(temp_cell);
@@ -349,7 +340,7 @@ void input_file() {
 
 							for (auto& u : temp_cell->get_pin()) {
 								u->set_belong(temp_cell);
-								cout << "u.get_belong().get_inst_name() : " << u->get_belong()->get_inst_name() << endl;
+								//cout << "u.get_belong().get_inst_name() : " << u->get_belong()->get_inst_name() << endl;
 							}
 
 							Gate.emplace_back(temp_cell);
@@ -396,12 +387,29 @@ void input_file() {
 							if (v->get_inst_name() == before) {
 								for (auto& u : v->get_pin()) {
 									if (u->get_pin_name() == after) {
-										cout << "Find Net with cell : " << v->get_inst_name() <<" / " << u->get_pin_name() <<" belong to " <<u->get_belong()->get_inst_name()<< endl;
+										//cout << "Find Net with cell : " << v->get_inst_name() <<" / " << u->get_pin_name() <<" belong to " <<u->get_belong()->get_inst_name()<< endl;
 										temp_net->add_pin(u);
-										if (after == "clk") {
-											cout << "\tBefore set_clk_net: Pin's clk_net is " << (u->get_clk_net() ? u->get_clk_net()->get_net_name() : "null") << endl;
+										if (after == "Clk") {
+											//cout << "\tBefore set_clk_net: Pin's clk_net is " << (u->get_clk_net() ? u->get_clk_net()->get_net_name() : "null") << endl;
 											u->set_clk_net(temp_net);
-											cout << "\tAfter set_clk_net: Pin's clk_net is " << (u->get_clk_net() ? u->get_clk_net()->get_net_name() : "null") << endl;
+											//cout << "\tAfter set_clk_net: Pin's clk_net is " << (u->get_clk_net() ? u->get_clk_net()->get_net_name() : "null") << endl;
+										}
+
+										break;
+									}
+								}
+							}
+						}
+						for (auto& v : Gate) {
+							if (v->get_inst_name() == before) {
+								for (auto& u : v->get_pin()) {
+									if (u->get_pin_name() == after) {
+										//cout << "Find Net with cell : " << v->get_inst_name() << " / " << u->get_pin_name() << " belong to " << u->get_belong()->get_inst_name() << endl;
+										temp_net->add_pin(u);
+										if (after == "Clk") {
+											//cout << "\tBefore set_clk_net: Pin's clk_net is " << (u->get_clk_net() ? u->get_clk_net()->get_net_name() : "null") << endl;
+											u->set_clk_net(temp_net);
+											//cout << "\tAfter set_clk_net: Pin's clk_net is " << (u->get_clk_net() ? u->get_clk_net()->get_net_name() : "null") << endl;
 										}
 
 										break;
@@ -482,7 +490,7 @@ void input_file() {
 					for (auto& iter : v->get_pin()) {
 						if (iter->get_pin_name() == tokens[2]) {
 							iter->set_timing_slack(stof(tokens[3]));
-							cout << "set_timing_slack=" << iter->get_timing_slack() << endl;
+							//cout << "set_timing_slack=" << iter->get_timing_slack() << endl;
 							break;
 						}
 					}
@@ -526,11 +534,11 @@ void initialize() {
 		}
 		*/
 		for (auto& u : v->get_connect_pin()) {
-			cout << "u pin name = " << u->get_pin_name() << endl;
-			if (u->get_pin_name() == "clk") {
+			//cout << "u pin name = " << u->get_pin_name() << endl;
+			if (u->get_pin_name() == "Clk") {
 				shared_ptr<Cell> cellPtr = u->get_belong();
 				if (cellPtr != nullptr) {
-					std::cout << u->get_pin_name()<<" belong_emplace -> "<<u->get_belong()->get_inst_name()<<"\n";
+					//std::cout << u->get_pin_name()<<" belong_emplace -> "<<u->get_belong()->get_inst_name()<<"\n";
 					temp.emplace_back(cellPtr);
 				}
 			}
@@ -539,6 +547,7 @@ void initialize() {
 
 		if (temp.size() != 0) {
 			same_clk_FF.emplace_back(temp);
+			cout << "Emplace_back to same_clk_FF" << endl;
 		}
 	}
 	std::cout << "start to bulid windows\n";
@@ -638,6 +647,26 @@ void show() {
 	show_netlist(netlist);
 
 }
+void show_same_clk_FF() {
+	cout << "start to show same_clk_FF\n";
+	ofstream outFile("show_same_clk_FF.txt");
+	if (!outFile.is_open()) {
+		std::cerr << "can't open the file" << std::endl;
+		return;
+	}
+	for (int i = 0; i < same_clk_FF.size(); ++i) {
+		outFile << "clk " << i << "\t:\n";
+		for (auto v : same_clk_FF.at(i)) {
+			outFile << "\tname : " << v->get_inst_name() << "\tpos : (" << v->getPos().get_xpos() << "," << v->getPos().get_ypos() << endl;
+			outFile << "\t\tpin : ";
+			for (auto u : v->get_pin()) {
+				outFile << " " << u->get_belong()->get_inst_name() << "/" << u->get_pin_name();
+			}
+			outFile << endl;
+		}
+	}
+}
+
 void show_cluster(vector<shared_ptr<Cluster>> clusters) {
 	ofstream outFile("show_clusters_after_EMS.txt");
 	if (!outFile.is_open()) {
