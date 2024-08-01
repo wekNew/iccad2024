@@ -92,8 +92,9 @@ void meanShift(std::vector<shared_ptr<Cell>>& cells, float max_bandwidth, int M,
                 newPosition = (newPosition + pointToShift * 9) / 10;
             }
             
-            builder.shiftPoint(i, newPosition);
             #pragma omp critical
+            builder.shiftPoint(i, newPosition);
+            
         }
         ++iterations;
     }
@@ -130,7 +131,7 @@ void meanShift(std::vector<shared_ptr<Cell>>& cells, float max_bandwidth, int M,
     
 }
 float VariableBandwidth(float max_distance,float Mth_distance,shared_ptr<Cell> cell) {
-    cout << "\tVariableBandwidth=" << std::min(max_distance, (float)(atan(cell->get_min_slack() - 5) / PI + 0.5) * Mth_distance) << "( " <<Mth_distance<<","<<cell->get_min_slack()<<"," << (atan(cell->get_min_slack() - 5) / PI + 0.5)  << " )" << endl;
+    //cout << "\tVariableBandwidth=" << std::min(max_distance, (float)(atan(cell->get_min_slack() - 5) / PI + 0.5) * Mth_distance) << "( " <<Mth_distance<<","<<cell->get_min_slack()<<"," << (atan(cell->get_min_slack() - 5) / PI + 0.5)  << " )" << endl;
     return std::min(max_distance, (float)(atan(cell->get_min_slack()-5)/PI + 0.5) * Mth_distance);
 }
 void buildClustersWithEpsilon(std::vector<shared_ptr<Cell>>& cells, float epsilon, vector < vector<weak_ptr<Cell>>>& clusters) {
