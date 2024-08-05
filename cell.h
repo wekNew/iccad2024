@@ -22,6 +22,7 @@ private:
 	Point pos;
 	string inst_name;
 	int cluster_num;
+	bool single_row_height;
 
 	int q_pin_delay;
 	float gate_power;
@@ -85,6 +86,9 @@ public:
 
 	void set_clusterNum(int num) {
 		cluster_num = num;
+	}
+	void set_single_row_height(bool input) {
+		single_row_height = input;
 	}
 	void set_p_right(int penalty) {//penalty
 		p_right = penalty;
@@ -166,6 +170,9 @@ public:
 	}
 	vector<weak_ptr<Cell>>& access_children() {
 		return children;
+	}
+	bool get_single_row_height() {
+		return single_row_height;
 	}
 	int get_p_right() {//penalty
 		return p_right;
