@@ -169,8 +169,8 @@ void place_FF_into_interval(Window&WD,shared_ptr<Cell>& FF,int row,int FF_height
 		time++;
 		int up_down = time % 4;
 		int move = time / 4;
-		bool place_down;
-		bool place_up;
+		bool place_down=true;
+		bool place_up=true;
 		if (up_down == 1 || up_down == 2) {
 			if (place_up != false) {
 				y = FF->get_ypos() + binheight * (move * 2 + up_down);
