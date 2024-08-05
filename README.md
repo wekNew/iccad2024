@@ -12,14 +12,14 @@ CXX = g++
 CXXFLAGS = -Wall -O2 -std=c++11 -fopenmp
 LDFLAGS = -fopenmp
 TARGET = my_project 
-SRCS = main.cpp cell.cpp Cluster.cpp ClustersBuilder.cpp meanShift.cpp netlist.cpp partition.cpp pin.cpp Point.cpp table.cpp
+SRCS = main.cpp cell.cpp Cluster.cpp ClustersBuilder.cpp meanShift.cpp netlist.cpp partition.cpp pin.cpp Point.cpp table.cpp legalize.cpp tetris.cpp
 OBJS = $(SRCS:.cpp=.o)
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 run: $(TARGET)
-	OMP_NUM_THREADS=4 ./$(TARGET)
+	OMP_NUM_THREADS=8 ./$(TARGET)
 clean:
 	rm -f $(TARGET) $(OBJS)
 ------------------------------------------------------------------------------------------------------------------------------------------
