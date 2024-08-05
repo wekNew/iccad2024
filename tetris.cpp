@@ -1,4 +1,21 @@
+#include<cmath>
+#include <unordered_map>
+#include <unordered_set>
 #include "tetris.h"
+#include"cell.h"
+#include"Point.h"
+#include"pin.h"
+
+using namespace std;
+
+int BinMaxUtil = 75;
+int binwidth = 0;
+int binheight = 0;
+int Die_max_x = 0;
+int Die_max_y = 0;
+int Die_min_x = 0;
+int Die_min_y = 0;
+int max_penalty = 10;
 
 shared_ptr<Window> FindWindowForMBFF(shared_ptr<Cell> MBFF, vector<vector<shared_ptr<Window>>> windows, int window_start_x, int window_start_y, int unit_x, int unit_y) {
 	vector<int> min_x_index, min_y_index;
@@ -49,4 +66,225 @@ shared_ptr<Window> CombiWindow(vector<vector<shared_ptr<Window>>> windows, int x
 		}
 	}
 	return new_window;
+}
+void to_the_site(shared_ptr<Cell>& cell) {//到site上
+	int x = cell->getPos().access_Values().at(0);
+	int y = cell->getPos().access_Values().at(1);
+	cout << "x:" << x << ",\ty:" << y;
+	int new_x = x / binwidth;
+	int new_y = y / binheight;
+	x = binwidth * new_x;
+	y = binheight * new_y;
+
+	cout << ",\tafter shift,\tx:" << x << ",\ty:" << y;
+
+	Point new_position({ static_cast<float>(x), static_cast<float>(y) });
+	cell->setPos(new_position);
+}
+float poriority_cost_function(shared_ptr<Cell>& FF) {
+	float cost;
+	float slack = 0.0;
+	float area;
+	int ff_height=FF->get_ff_height()/binheight;
+	for (int i = 0; i < FF->get_children().size(); i++) {
+		shared_ptr<Cell> child = FF->get_children()[i];
+		for (auto& pin : child->get_pin()) {
+			slack += pin->get_timing_slack();
+		}
+	}
+	slack = slack / FF->get_children().size();
+	area = FF->get_ff_height() * FF->get_ff_width();
+	cost = ff_height * 1000 + atan(area/slack);//arctan的cost function
+	return cost;
+}
+bool poriority_bigger(shared_ptr<Cell>& FF1, shared_ptr<Cell>& FF2) {//比較cost function
+	if (poriority_cost_function(FF1) <= poriority_cost_function(FF2)) {
+		return true;
+	}
+	
+	else return false;
+}
+
+void place_cell_into_interval(Window& WD, shared_ptr<Cell>& cell,int row) {
+	if (cell->get_single_row_height() == true) {
+		WD.set_row_interval(row,cell->get_xpos(),cell->get_xpos()+cell->get_ff_width());
+	}
+	else {
+		int ff_row_height = cell->get_ff_height() / binheight;
+		for (int i = row; i < ff_row_height; i++) {
+			WD.set_row_interval(i, cell->get_xpos(), cell->get_xpos() + cell->get_ff_width());
+		}
+	}
+}
+void place_FF_into_interval(Window&WD,shared_ptr<Cell>& FF,int row,int FF_height,int time) {
+	vector < Interval >check_interval = WD.get_valid_interval(row,FF_height);
+	int x = FF->getPos().access_Values().at(0);
+	int y = FF->getPos().access_Values().at(1);
+	bool success = false;
+	if (check_interval.size() != 0) {
+		sort(check_interval.begin(), check_interval.end(), [x, FF](const Interval& a, const Interval& b) {//先照FF的距離去排列
+			int dist_a, dist_b;
+			if ((a.start - x) < a.end - (x + FF->get_ff_width())) {
+				dist_a = a.start - x;
+			}
+			else {
+				dist_a = a.end - (x + FF->get_ff_width());
+			}
+			if ((b.start - x) < b.end - (x + FF->get_ff_width())) {
+				dist_b = b.start - x;
+			}
+			else {
+				dist_b = b.end - (x + FF->get_ff_width());
+			}
+			return dist_a < dist_b;
+			});
+		for (int i = 0; i < check_interval.size(); i++) {
+			if (check_interval[i].end - check_interval[i].start >= FF->get_ff_width()) {//有區間放得下去
+				if (i == 0) {//一開始就可以放
+					Point new_position_1({ static_cast<float>(x), static_cast<float>(y) });
+					FF->setPos(new_position_1);
+					place_cell_into_interval(WD, FF, row);
+					success = true;
+				}
+				else {//移到那個區間
+					if ((x - check_interval[i].start) < (check_interval[i].end - (x + FF->get_ff_width()))) {
+						x = check_interval[i].start;
+					}
+					else {
+						x = check_interval[i].end;
+					}
+					Point new_position_2({ static_cast<float>(x), static_cast<float>(y) });
+					FF->setPos(new_position_2);
+					place_cell_into_interval(WD, FF, row);
+					success = true;
+				}
+			}
+		}
+	}
+	else {
+		success = false;
+	}
+	int window_y = WD.get_ypos();
+	if (success == false) {//代表row放不下去
+		time++;
+		int up_down = time % 4;
+		int move = time / 4;
+		bool place_down;
+		bool place_up;
+		if (up_down == 1 || up_down == 2) {
+			if (place_up != false) {
+				y = FF->get_ypos() + binheight * (move * 2 + up_down);
+				if (y <= WD.get_ypos() + WD.get_height() || y + FF->get_ff_height() <= WD.get_ypos() + WD.get_height()) {
+					Point new_position_3({ static_cast<float>(x), static_cast<float>(y) });
+					FF->setPos(new_position_3);
+					row = (y - window_y) / binheight;
+					place_FF_into_interval(WD, FF, row, FF_height, time);
+					success = true;
+				}
+				else {
+					place_up = false;
+					success = false;
+				}
+			}			
+		}
+		else if (up_down == 3) {
+			if (place_down != false) {
+				y = FF->get_ypos() - binheight * (move * 2 + up_down - 2);
+				if (y >= WD.get_ypos()) {
+					Point new_position_4({ static_cast<float>(x), static_cast<float>(y) });
+					FF->setPos(new_position_4);
+					row = (y - window_y) / binheight;
+					place_FF_into_interval(WD, FF, row, FF_height, time);
+					success = true;
+				}
+				else {
+					place_down == false;
+					success = false;
+				}
+			}
+			
+		}
+		else if (up_down == 0) {
+			if (place_down != false) {
+				y = FF->get_ypos() - binheight * (move * 2);
+				if (y >= WD.get_ypos()) {
+					Point new_position_4({ static_cast<float>(x), static_cast<float>(y) });
+					FF->setPos(new_position_4);
+					row = (y - window_y) / binheight;
+					place_FF_into_interval(WD, FF, row, FF_height, time);
+					success = true;
+				}
+				else {
+					place_down = false;
+					success = false;
+				}
+			}
+		}
+		if (success == false && place_up == false && place_down == false) {//完全放不下
+			WD.set_illegal_FF(FF);
+		}
+		
+	}
+	
+}
+void sort_input(vector<shared_ptr<Cell>>& FF) {//依照poriortity去排FF
+	sort(FF.begin(), FF.end(), poriority_bigger);//先依照poriority去排
+	for (int i = 0; i < FF.size(); i++) {
+		if (FF[i]->get_ff_height() / binwidth > 1) {//再判斷是不是single row height
+			FF[i]->set_single_row_height(false);
+		}
+		else {
+			FF[i]->set_single_row_height(true);
+		}
+	}
+}
+
+void tetris(Window& WD,vector<Cell>& MBFF, int bin_width, int bin_height, int die_x_min, int die_y_min, int die_x_max, int die_y_max) {
+	int num_of_multi_row_height = 0;
+	binwidth = bin_width;
+	binheight = bin_height;
+	Die_max_x = die_x_max;
+	Die_max_y = die_y_max;
+	Die_min_x = die_x_min;
+	Die_min_y = die_y_min;
+	cout << "unit: " << bin_width << ", " << bin_height << "\n";
+	for (auto& cell : WD.access_Gate()) {
+		to_the_site(cell);
+		cout << "\n";
+	}
+	for (auto& cell : WD.access_EdgeCell()) {
+		to_the_site(cell);
+		cout << "\n";
+	}
+	for (auto& cell : WD.access_FF()) {
+		to_the_site(cell);
+		cout << "\n";
+	}
+	//先放gate
+	int window_y = WD.get_ypos();
+	for (int i = 0; i < WD.access_Gate().size(); i++) {
+		shared_ptr<Cell> gate = WD.access_Gate()[i];
+		int gate_x_start = gate->get_xpos();
+		int gate_x_end = gate->get_xpos() + gate->get_ff_width();
+		int row = (gate->get_ypos() - window_y) / binheight;
+		place_cell_into_interval(WD, gate, row);
+	}
+	//再放edge cell,這邊是不會overlap的放法
+	for (int i = 0; i < WD.access_EdgeCell().size(); i++) {
+		shared_ptr<Cell> edge_cell = WD.access_Gate()[i];
+		int gate_x_start = edge_cell->get_xpos();
+		int gate_x_end = edge_cell->get_xpos() + edge_cell->get_ff_width();
+		int row = (edge_cell->get_ypos() - window_y) / binheight;
+		place_cell_into_interval(WD, edge_cell, row);
+	}
+	//最後放FF
+	for (int i = 0; i < WD.access_FF().size(); i++) {//上面已經依照poriority去排好了
+		int time = 0;
+		shared_ptr<Cell> FF = WD.access_FF()[i];
+		int FF_x_start = FF->get_xpos();
+		int FF_x_end = FF->get_xpos() + FF->get_ff_width();
+		int row = (FF->get_ypos() - window_y) / binheight;
+		int gate_height = FF->get_ff_height() / binheight;
+		place_FF_into_interval(WD, FF, row, gate_height,time);
+	}
 }
