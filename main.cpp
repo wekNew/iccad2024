@@ -761,8 +761,12 @@ void drawPlot() {
 		std::cerr << "無法打開檔案" << std::endl;
 		return;
 	}
-	for (auto v : MBFF) {
+	for (auto v : FF) {
 		outFile << "COLOR green" << endl;
+		outFile << "SRF " << v->getPos().get_xpos() << " " << v->getPos().get_ypos() << " " << v->getPos().get_xpos() + v->get_ff_width() << " " << v->getPos().get_ypos() + v->get_ff_height() << endl;
+	}
+	for (auto v : Gate) {
+		outFile << "COLOR black" << endl;
 		outFile << "SRF " << v->getPos().get_xpos() << " " << v->getPos().get_ypos() << " " << v->getPos().get_xpos() + v->get_ff_width() << " " << v->getPos().get_ypos() + v->get_ff_height() << endl;
 	}
 }
