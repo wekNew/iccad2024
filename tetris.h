@@ -12,7 +12,7 @@ struct Interval {
 };
 struct IntervalPoint {
 	float x_pos;
-	int identity;//		1ä»£è¡¨start	-1ä»£è¡¨end;
+	int identity;//		1¥Nªístart	-1¥Nªíend;
 };
 struct OnsiteLocation {
 	int startX;
@@ -53,31 +53,31 @@ private:
 			}
 		}
 		std::sort(temp.begin(), temp.end(), [](const IntervalPoint& a, const IntervalPoint& b) {
-				return a.x_pos < b.x_pos;
+			return a.x_pos < b.x_pos;
 			});
 		int count = 0;
 		bool record = false;
 		Interval current_interval;
 
 
-		for (int i = 0;i<temp.size();i++) {
+		for (int i = 0; i < temp.size(); i++) {
 			count += temp[i].identity;
-			if (temp[0].x_pos != x_pos) {//å­˜æœ€å‰é¢çš„å€é–“
+			if (temp[0].x_pos != x_pos) {//¦s³Ì«e­±ªº°Ï¶¡
 				current_interval.start = x_pos;
 				current_interval.end = temp[0].x_pos;
 				final_interval.emplace_back(current_interval);
 			}
-			if (temp[temp.size()-1].x_pos != (x_pos+width)) {//å­˜æœ€å¾Œé¢çš„å€é–“
+			if (temp[temp.size() - 1].x_pos != (x_pos + width)) {//¦s³Ì«á­±ªº°Ï¶¡
 				current_interval.start = temp[temp.size() - 1].x_pos;
-				current_interval.end =( x_pos + width );
+				current_interval.end = (x_pos + width);
 				final_interval.emplace_back(current_interval);
 			}
 			if (count == 0) {
-				current_interval.start = temp[i].x_pos;//å­˜çš„æ˜¯V.end
+				current_interval.start = temp[i].x_pos;//¦sªº¬OV.end
 				record = true;
 			}
-			if (count ==  1 && record) {
-				current_interval.end = temp[i].x_pos;//å­˜çš„æ˜¯V.start
+			if (count == 1 && record) {
+				current_interval.end = temp[i].x_pos;//¦sªº¬OV.start
 				final_interval.emplace_back(current_interval);
 				record = false;
 			}
@@ -132,10 +132,10 @@ public:
 inline int IndexConvert(float pos, int window_start_pos, int unit) {
 	return ((pos - window_start_pos) / unit);
 }
-shared_ptr<Window> FindWindowForMBFF(shared_ptr<Cell> MBFF, vector<vector<shared_ptr<Window>>> windows, int window_start_x, int window_start_y, int unit_x, int unit_y);
-shared_ptr<Window> CombiWindow(vector<vector<shared_ptr<Window>>> windows, int x_start_index, int y_start_index, int x_end_index, int y_end_index);
+shared_ptr<Window> FindWindowForMBFF(shared_ptr<Cell>& MBFF, vector<vector<shared_ptr<Window>>>& windows, int window_start_x, int window_start_y, int unit_x, int unit_y);
+shared_ptr<Window> CombiWindow(vector<vector<shared_ptr<Window>>>& windows, int x_start_index, int y_start_index, int x_end_index, int y_end_index);
 
-//vector<Cell>already_place_MBFF;//æ”¾å·²ç¶“æ”¾å¥½çš„MBFF
+//vector<Cell>already_place_MBFF;//©ñ¤w¸g©ñ¦nªºMBFF
 void to_the_site(shared_ptr<Cell>& cell);
 //float poriority_cost_function(Cell& cluster1, Cell& cluster2);
 //bool poriority_bigger(Cell& cluster1, Cell& cluster2);

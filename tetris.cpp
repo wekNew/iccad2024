@@ -17,7 +17,7 @@ int Die_min_x = 0;
 int Die_min_y = 0;
 int max_penalty = 10;
 
-shared_ptr<Window> FindWindowForMBFF(shared_ptr<Cell> MBFF, vector<vector<shared_ptr<Window>>> windows, int window_start_x, int window_start_y, int unit_x, int unit_y) {
+shared_ptr<Window> FindWindowForMBFF(shared_ptr<Cell>& MBFF, vector<vector<shared_ptr<Window>>>& windows, int window_start_x, int window_start_y, int unit_x, int unit_y) {
 	vector<int> min_x_index, min_y_index;
 	vector<int> max_x_index, max_y_index;
 
@@ -34,8 +34,8 @@ shared_ptr<Window> FindWindowForMBFF(shared_ptr<Cell> MBFF, vector<vector<shared
 	int y_end_index = *std::min_element(max_y_index.begin(), max_y_index.end());
 	return CombiWindow(windows, x_start_index, y_start_index, x_end_index, y_end_index);
 }
-shared_ptr<Window> CombiWindow(vector<vector<shared_ptr<Window>>> windows, int x_start_index, int y_start_index, int x_end_index, int y_end_index) {
-	shared_ptr<Window> new_window=make_shared<Window>();
+shared_ptr<Window> CombiWindow(vector<vector<shared_ptr<Window>>>& windows, int x_start_index, int y_start_index, int x_end_index, int y_end_index) {
+	shared_ptr<Window> new_window = make_shared<Window>();
 	int new_window_xpos = windows.at(x_start_index).at(y_start_index)->get_xpos();
 	int new_window_ypos = windows.at(x_start_index).at(y_start_index)->get_ypos();
 	int new_window_width = windows.at(x_end_index).at(y_start_index)->get_xpos() + windows.at(x_end_index).at(y_start_index)->get_width() - new_window_xpos;
@@ -52,13 +52,15 @@ shared_ptr<Window> CombiWindow(vector<vector<shared_ptr<Window>>> windows, int x
 			}
 			for (auto& v : windows.at(X).at(Y)->access_EdgeCell()) {
 				if ((v->getPos().get_xpos() < new_window_xpos) || (v->getPos().get_ypos() < new_window_ypos) || (v->getPos().get_xpos() + v->get_ff_width() > new_window_xpos + new_window_width) || (v->getPos().get_ypos() + v->get_ff_height() > new_window_ypos + new_window_height)) {
-					new_window->access_EdgeCell().emplace_back(v);
+					if (!any_of(new_window->access_EdgeCell().begin(), new_window->access_EdgeCell().end(), [v](shared_ptr<Cell> elem) {return v == elem; })) {
+						new_window->access_EdgeCell().emplace_back(v);
+					}
 				}
 				else {
-					if (v->get_bit() == 0) {
+					if (v->get_bit() == 0 && !any_of(new_window->access_Gate().begin(), new_window->access_Gate().end(), [v](shared_ptr<Cell> elem) {return v == elem; })) {
 						new_window->access_Gate().emplace_back(v);
 					}
-					else {
+					if (v->get_bit() != 0 && !any_of(new_window->access_FF().begin(), new_window->access_FF().end(), [v](shared_ptr<Cell> elem) {return v == elem; })) {
 						new_window->access_FF().emplace_back(v);
 					}
 				}
@@ -69,7 +71,7 @@ shared_ptr<Window> CombiWindow(vector<vector<shared_ptr<Window>>> windows, int x
 	}
 	return new_window;
 }
-void to_the_site(shared_ptr<Cell>& cell) {//åˆ°siteä¸Š
+void to_the_site(shared_ptr<Cell>& cell) {//¨ìsite¤W
 	int x = cell->getPos().access_Values().at(0);
 	int y = cell->getPos().access_Values().at(1);
 	cout << "x:" << x << ",\ty:" << y;
@@ -87,7 +89,7 @@ float poriority_cost_function(shared_ptr<Cell>& FF) {
 	float cost;
 	float slack = 0.0;
 	float area;
-	int ff_height=FF->get_ff_height()/binheight;
+	int ff_height = FF->get_ff_height() / binheight;
 	for (int i = 0; i < FF->get_children().size(); i++) {
 		shared_ptr<Cell> child = FF->get_children()[i];
 		for (auto& pin : child->get_pin()) {
@@ -96,20 +98,20 @@ float poriority_cost_function(shared_ptr<Cell>& FF) {
 	}
 	slack = slack / FF->get_children().size();
 	area = FF->get_ff_height() * FF->get_ff_width();
-	cost = ff_height * 1000 + atan(area/slack);//arctançš„cost function
+	cost = ff_height * 1000 + atan(area / slack);//arctanªºcost function
 	return cost;
 }
-bool poriority_bigger(shared_ptr<Cell>& FF1, shared_ptr<Cell>& FF2) {//æ¯”è¼ƒcost function
+bool poriority_bigger(shared_ptr<Cell>& FF1, shared_ptr<Cell>& FF2) {//¤ñ¸ûcost function
 	if (poriority_cost_function(FF1) <= poriority_cost_function(FF2)) {
 		return true;
 	}
-	
+
 	else return false;
 }
 
-void place_cell_into_interval(Window& WD, shared_ptr<Cell>& cell,int row) {
-	if (cell->get_single_row_height() == true) {
-		WD.set_row_interval(row,cell->get_xpos(),cell->get_xpos()+cell->get_ff_width());
+void place_cell_into_interval(Window& WD, shared_ptr<Cell>& cell, int row) {
+	if (cell->get_ff_height() / binheight == 1) {
+		WD.set_row_interval(row, cell->get_xpos(), cell->get_xpos() + cell->get_ff_width());
 	}
 	else {
 		int ff_row_height = cell->get_ff_height() / binheight;
@@ -118,13 +120,13 @@ void place_cell_into_interval(Window& WD, shared_ptr<Cell>& cell,int row) {
 		}
 	}
 }
-void place_FF_into_interval(Window&WD,shared_ptr<Cell>& FF,int row,int FF_height,int time) {
-	vector < Interval >check_interval = WD.get_valid_interval(row,FF_height);
+void place_FF_into_interval(Window& WD, shared_ptr<Cell>& FF, int row, int FF_height, int time) {
+	vector < Interval >check_interval = WD.get_valid_interval(row, FF_height);
 	int x = FF->getPos().access_Values().at(0);
 	int y = FF->getPos().access_Values().at(1);
 	bool success = false;
 	if (check_interval.size() != 0) {
-		sort(check_interval.begin(), check_interval.end(), [x, FF](const Interval& a, const Interval& b) {//å…ˆç…§FFçš„è·é›¢å»æ’åˆ—
+		sort(check_interval.begin(), check_interval.end(), [x, FF](const Interval& a, const Interval& b) {//¥ı·ÓFFªº¶ZÂ÷¥h±Æ¦C
 			int dist_a, dist_b;
 			if ((a.start - x) < a.end - (x + FF->get_ff_width())) {
 				dist_a = a.start - x;
@@ -141,14 +143,14 @@ void place_FF_into_interval(Window&WD,shared_ptr<Cell>& FF,int row,int FF_height
 			return dist_a < dist_b;
 			});
 		for (int i = 0; i < check_interval.size(); i++) {
-			if (check_interval[i].end - check_interval[i].start >= FF->get_ff_width()) {//æœ‰å€é–“æ”¾å¾—ä¸‹å»
-				if (i == 0) {//ä¸€é–‹å§‹å°±å¯ä»¥æ”¾
+			if (check_interval[i].end - check_interval[i].start >= FF->get_ff_width()) {//¦³°Ï¶¡©ñ±o¤U¥h
+				if (i == 0) {//¤@¶}©l´N¥i¥H©ñ
 					Point new_position_1({ static_cast<float>(x), static_cast<float>(y) });
 					FF->setPos(new_position_1);
 					place_cell_into_interval(WD, FF, row);
 					success = true;
 				}
-				else {//ç§»åˆ°é‚£å€‹å€é–“
+				else {//²¾¨ì¨º­Ó°Ï¶¡
 					if ((x - check_interval[i].start) < (check_interval[i].end - (x + FF->get_ff_width()))) {
 						x = check_interval[i].start;
 					}
@@ -167,12 +169,12 @@ void place_FF_into_interval(Window&WD,shared_ptr<Cell>& FF,int row,int FF_height
 		success = false;
 	}
 	int window_y = WD.get_ypos();
-	if (success == false) {//ä»£è¡¨rowæ”¾ä¸ä¸‹å»
+	if (success == false) {//¥Nªírow©ñ¤£¤U¥h
 		time++;
 		int up_down = time % 4;
 		int move = time / 4;
-		bool place_down=true;
-		bool place_up=true;
+		bool place_down = true;
+		bool place_up = true;
 		if (up_down == 1 || up_down == 2) {
 			if (place_up != false) {
 				y = FF->get_ypos() + binheight * (move * 2 + up_down);
@@ -187,7 +189,7 @@ void place_FF_into_interval(Window&WD,shared_ptr<Cell>& FF,int row,int FF_height
 					place_up = false;
 					success = false;
 				}
-			}			
+			}
 		}
 		else if (up_down == 3) {
 			if (place_down != false) {
@@ -204,7 +206,7 @@ void place_FF_into_interval(Window&WD,shared_ptr<Cell>& FF,int row,int FF_height
 					success = false;
 				}
 			}
-			
+
 		}
 		else if (up_down == 0) {
 			if (place_down != false) {
@@ -222,26 +224,19 @@ void place_FF_into_interval(Window&WD,shared_ptr<Cell>& FF,int row,int FF_height
 				}
 			}
 		}
-		if (success == false && place_up == false && place_down == false) {//å®Œå…¨æ”¾ä¸ä¸‹
+		if (success == false && place_up == false && place_down == false) {//§¹¥ş©ñ¤£¤U
 			WD.set_illegal_FF(FF);
 		}
-		
+
 	}
-	
+
 }
-void sort_input(vector<shared_ptr<Cell>>& FF) {//ä¾ç…§poriortityå»æ’FF
-	sort(FF.begin(), FF.end(), poriority_bigger);//å…ˆä¾ç…§poriorityå»æ’
-	for (int i = 0; i < FF.size(); i++) {
-		if (FF[i]->get_ff_height() / binwidth > 1) {//å†åˆ¤æ–·æ˜¯ä¸æ˜¯single row height
-			FF[i]->set_single_row_height(false);
-		}
-		else {
-			FF[i]->set_single_row_height(true);
-		}
-	}
+void sort_input(vector<shared_ptr<Cell>>& FF) {//¨Ì·Óporiortity¥h±ÆFF
+	sort(FF.begin(), FF.end(), poriority_bigger);//¥ı¨Ì·Óporiority¥h±Æ
+
 }
 
-void tetris(Window& WD,vector<Cell>& MBFF, int bin_width, int bin_height, int die_x_min, int die_y_min, int die_x_max, int die_y_max) {
+void tetris(Window& WD, vector<Cell>& MBFF, int bin_width, int bin_height, int die_x_min, int die_y_min, int die_x_max, int die_y_max) {
 	int num_of_multi_row_height = 0;
 	binwidth = bin_width;
 	binheight = bin_height;
@@ -262,7 +257,7 @@ void tetris(Window& WD,vector<Cell>& MBFF, int bin_width, int bin_height, int di
 		to_the_site(cell);
 		cout << "\n";
 	}
-	//å…ˆæ”¾gate
+	//¥ı©ñgate
 	int window_y = WD.get_ypos();
 	for (int i = 0; i < WD.access_Gate().size(); i++) {
 		shared_ptr<Cell> gate = WD.access_Gate()[i];
@@ -271,7 +266,7 @@ void tetris(Window& WD,vector<Cell>& MBFF, int bin_width, int bin_height, int di
 		int row = (gate->get_ypos() - window_y) / binheight;
 		place_cell_into_interval(WD, gate, row);
 	}
-	//å†æ”¾edge cell,é€™é‚Šæ˜¯ä¸æœƒoverlapçš„æ”¾æ³•
+	//¦A©ñedge cell,³oÃä¬O¤£·|overlapªº©ñªk
 	for (int i = 0; i < WD.access_EdgeCell().size(); i++) {
 		shared_ptr<Cell> edge_cell = WD.access_Gate()[i];
 		int gate_x_start = edge_cell->get_xpos();
@@ -279,14 +274,14 @@ void tetris(Window& WD,vector<Cell>& MBFF, int bin_width, int bin_height, int di
 		int row = (edge_cell->get_ypos() - window_y) / binheight;
 		place_cell_into_interval(WD, edge_cell, row);
 	}
-	//æœ€å¾Œæ”¾FF
-	for (int i = 0; i < WD.access_FF().size(); i++) {//ä¸Šé¢å·²ç¶“ä¾ç…§poriorityå»æ’å¥½äº†
+	//³Ì«á©ñFF
+	for (int i = 0; i < WD.access_FF().size(); i++) {//¤W­±¤w¸g¨Ì·Óporiority¥h±Æ¦n¤F
 		int time = 0;
 		shared_ptr<Cell> FF = WD.access_FF()[i];
 		int FF_x_start = FF->get_xpos();
 		int FF_x_end = FF->get_xpos() + FF->get_ff_width();
 		int row = (FF->get_ypos() - window_y) / binheight;
 		int gate_height = FF->get_ff_height() / binheight;
-		place_FF_into_interval(WD, FF, row, gate_height,time);
+		place_FF_into_interval(WD, FF, row, gate_height, time);
 	}
 }
