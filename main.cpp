@@ -12,7 +12,7 @@ using namespace std;
 #include "Cluster.h"
 #include "table.h"
 #include "partition.h"
-#include "legalize.h"
+//#include "legalize.h"
 #include"tetris.h"
 
 #include <chrono>
@@ -106,7 +106,7 @@ int main() {
 		
 		show();
 	show_windows();
-
+	show_same_clk_FF();
 	
 
 	int max_cluster_size = 0;
@@ -162,12 +162,76 @@ int main() {
 
 	show_MBFF();
 
-	START_TIMER(legal)
-		for (int i = 0; i < MBFF.size(); i++) {
-			MBFF[i]->set_clusterNum(i);
+	for (auto& v : MBFF) {
+		shared_ptr<Window> target_window = FindWindowForMBFF(v, windows, row_start_x, row_start_y, row_width * window_width, row_height * window_height);
+		//tetris(target_window);
+		for (auto& v : target_window->access_FF()) {
+			int cell_x_min = v->get_xpos();
+			int cell_x_max = v->get_xpos() + v->get_ff_width();
+			int cell_y_min = v->get_ypos();
+			int cell_y_max = v->get_ypos() + v->get_ff_height();
+			int x_index = (cell_x_min - row_start_x) / (row_width * window_width);
+			int y_index = (cell_x_min - row_start_y) / (row_height * window_height);
+			cout << "x_index : " << x_index << "\ty_index : " << y_index << endl;
+			shared_ptr<Window> current_window = windows.at(x_index).at(y_index);
+			bool right_over = false, up_over = false;
+			if (cell_x_max > current_window->get_xpos() + current_window->get_width()) {
+				right_over = true;
+			}
+			if (cell_y_max > current_window->get_ypos() + current_window->get_height()) {
+				up_over = true;
+			}
+			if (right_over) {
+				windows.at(x_index + 1).at(y_index)->access_EdgeCell().emplace_back(v);
+			}
+			if (up_over) {
+				windows.at(x_index).at(y_index + 1)->access_EdgeCell().emplace_back(v);
+			}
+			if (right_over && up_over) {
+
+				windows.at(x_index + 1).at(y_index + 1)->access_EdgeCell().emplace_back(v);
+			}
+			if (!right_over && !up_over) {
+				current_window->access_FF().emplace_back(v);
+			}
+			else {
+				current_window->access_EdgeCell().emplace_back(v);
+			}
 		}
-	//legalize(MBFF, bin_width, bin_height, die.x_min, die.y_min, die.x_max, die.y_max);
-	STOP_TIMER(legal, "legalize()", logfile)
+		for (auto& v : target_window->access_EdgeCell()) {
+			int cell_x_min = v->get_xpos();
+			int cell_x_max = v->get_xpos() + v->get_ff_width();
+			int cell_y_min = v->get_ypos();
+			int cell_y_max = v->get_ypos() + v->get_ff_height();
+			int x_index = (cell_x_min - row_start_x) / (row_width * window_width);
+			int y_index = (cell_x_min - row_start_y) / (row_height * window_height);
+			cout << "x_index : " << x_index << "\ty_index : " << y_index << endl;
+			shared_ptr<Window> current_window = windows.at(x_index).at(y_index);
+			bool right_over = false, up_over = false;
+			if (cell_x_max > current_window->get_xpos() + current_window->get_width()) {
+				right_over = true;
+			}
+			if (cell_y_max > current_window->get_ypos() + current_window->get_height()) {
+				up_over = true;
+			}
+			if (right_over) {
+				windows.at(x_index + 1).at(y_index)->access_EdgeCell().emplace_back(v);
+			}
+			if (up_over) {
+				windows.at(x_index).at(y_index + 1)->access_EdgeCell().emplace_back(v);
+			}
+			if (right_over && up_over) {
+
+				windows.at(x_index + 1).at(y_index + 1)->access_EdgeCell().emplace_back(v);
+			}
+			if (!right_over && !up_over) {
+				current_window->access_FF().emplace_back(v);
+			}
+			else {
+				current_window->access_EdgeCell().emplace_back(v);
+			}
+		}
+	}
 
 		drawPlot();
 
@@ -570,9 +634,7 @@ void initialize() {
 		windows.emplace_back(row_window);
 	}
 	
-
 	for (auto& v : FF) {
-
 		int cell_x_min = v->getPos().access_Values().at(0);
 		int cell_x_max = v->getPos().access_Values().at(0) + v->get_ff_width();
 		int cell_y_min = v->getPos().access_Values().at(1);
@@ -769,6 +831,7 @@ void drawPlot() {
 		outFile << "COLOR black" << endl;
 		outFile << "SRF " << v->getPos().get_xpos() << " -" << v->getPos().get_ypos() << " " << v->getPos().get_xpos() + v->get_ff_width() << " -" << v->getPos().get_ypos() + v->get_ff_height() << endl;
 	}
+
 }
 
 float costFunc(vector<Cell>& mbff)
