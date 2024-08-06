@@ -63,6 +63,8 @@ shared_ptr<Window> CombiWindow(vector<vector<shared_ptr<Window>>> windows, int x
 					}
 				}
 			}
+			windows.at(X).at(Y)->access_FF().clear();
+			windows.at(X).at(Y)->access_EdgeCell().clear();
 		}
 	}
 	return new_window;
